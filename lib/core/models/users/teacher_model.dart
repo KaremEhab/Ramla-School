@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ramla_school/core/app/constants.dart';
+import 'package:ramla_school/core/models/lesson_model.dart';
+import 'package:ramla_school/core/models/subject_model.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 
 class TeacherModel extends UserModel {
-  // You can add teacher-specific fields here later
-  // e.g., final List<String> subjects;
+  final List<LessonModel> subjects;
+  final String? _fullName;
 
   const TeacherModel({
     required super.id,
@@ -15,8 +17,13 @@ class TeacherModel extends UserModel {
     required super.status,
     required super.gender,
     required super.createdAt,
-    // required this.subjects,
-  }) : super(role: UserRole.teacher); // Role is fixed
+    required this.subjects,
+    String? fullName, // optional custom full name
+  }) : _fullName = fullName,
+       super(role: UserRole.teacher);
+
+  /// Computed full name (uses provided fullName if any)
+  String get fullName => _fullName ?? '$firstName $lastName';
 
   @override
   Map<String, dynamic> toMap() {
@@ -26,16 +33,15 @@ class TeacherModel extends UserModel {
       'lastName': lastName,
       'email': email,
       'imageUrl': imageUrl,
-      'role': role.name, // Saves enum as string 'teacher'
+      'role': role.name,
       'status': status.name,
       'gender': gender.name,
       'createdAt': Timestamp.fromDate(createdAt),
-      // 'subjects': subjects,
+      'subjects': subjects.map((s) => s.toMap()).toList(),
+      'fullName': fullName, // Include full name in map
     };
   }
 
-  // ** THE FIX IS HERE **
-  // Removed the 'role' parameter from this factory
   factory TeacherModel.fromMap(Map<String, dynamic> map) {
     return TeacherModel(
       id: map['id'] ?? '',
@@ -43,11 +49,15 @@ class TeacherModel extends UserModel {
       lastName: map['lastName'] ?? '',
       email: map['email'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
-      // 'role' is not needed here, it's set in the constructor
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      // subjects: List<String>.from(map['subjects'] ?? []),
+      subjects:
+          (map['subjects'] as List<dynamic>?)
+              ?.map((e) => LessonModel.fromMap(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      fullName: map['fullName'], // Safe to load from Firebase if exists
     );
   }
 
@@ -62,6 +72,8 @@ class TeacherModel extends UserModel {
     UserStatus? status,
     Gender? gender,
     DateTime? createdAt,
+    List<LessonModel>? subjects,
+    String? fullName,
   }) {
     return TeacherModel(
       id: id ?? this.id,
@@ -72,6 +84,8 @@ class TeacherModel extends UserModel {
       status: status ?? this.status,
       gender: gender ?? this.gender,
       createdAt: createdAt ?? this.createdAt,
+      subjects: subjects ?? this.subjects,
+      fullName: fullName ?? _fullName,
     );
   }
 }
