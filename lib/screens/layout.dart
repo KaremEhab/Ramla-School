@@ -45,7 +45,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
           const Home(),
           const TimetableScreen(),
           const _ChatScreen(),
-          const FaqScreen(),
+          const FaqsScreen(),
         ];
         _navBarItems = [
           _buildNavItem(IconlyLight.home, IconlyBold.home, ''),
