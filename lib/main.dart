@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ramla_school/features/splash.dart'; // Make sure this path is correct
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:ramla_school/core/app/constants.dart';
+import 'package:ramla_school/core/services/cache_helper.dart';
+import 'package:ramla_school/screens/layout.dart';
+import 'package:ramla_school/screens/splash.dart'; // Make sure this path is correct
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ar');
+  await CacheHelper.init();
+
   runApp(const MyApp());
 }
 
@@ -27,11 +35,11 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // ----------------------------------------
 
+      // ----------------------------------------
       theme: ThemeData(
         fontFamily: 'Tajawal',
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
 
         // Optional: This can make text look more natural in Arabic
         textTheme: const TextTheme(

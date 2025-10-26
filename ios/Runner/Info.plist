@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ramla School</string>
+	<string>Ramla School - مدرسة رملة</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -43,7 +43,19 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>يحتاج التطبيق للوصول إلى الملفات لاختيار المستندات.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>يحتاج التطبيق للوصول إلى مجلد المستندات.</string>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>http</string>
+        <string>https</string>
+    </array>
+
 	<true/>
 </dict>
 </plist>
