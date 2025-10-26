@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
+import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
           const Home(),
           const TimetableScreen(),
           const _ChatScreen(),
-          const _FaqsScreen(),
+          const FaqScreen(),
         ];
         _navBarItems = [
           _buildNavItem(IconlyLight.home, IconlyBold.home, ''),
