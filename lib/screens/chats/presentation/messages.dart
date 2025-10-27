@@ -69,7 +69,8 @@ class _MessagesScreenState extends State<MessagesScreen>
       name: 'أستاذة سميرة',
       lastMessage: 'ممتاز يا ندى',
       timeAgo: '2 د',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=س', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
       unreadCount: 1,
       isOnline: true,
     ),
@@ -78,7 +79,8 @@ class _MessagesScreenState extends State<MessagesScreen>
       name: 'أستاذة فرح',
       lastMessage: 'هذا صحيح يا ندى',
       timeAgo: '5 د',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=ف', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
       unreadCount: 2,
     ),
     ChatItem(
@@ -86,7 +88,8 @@ class _MessagesScreenState extends State<MessagesScreen>
       name: 'أستاذة اسماء',
       lastMessage: 'نعم هناك امتحان غدا',
       timeAgo: '1 س',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=ا', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
     ),
     // Add more chats...
   ];
@@ -96,26 +99,30 @@ class _MessagesScreenState extends State<MessagesScreen>
       id: 't1',
       name: 'أستاذة سميرة',
       subject: 'معلمة رياضيات',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=س', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
       isOnline: true,
     ),
     TeacherItem(
       id: 't2',
       name: 'أستاذة فرح',
       subject: 'معلمة علوم',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=ف', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
     ),
     TeacherItem(
       id: 't3',
       name: 'أستاذة اسماء',
       subject: 'معلمة لغة عربية',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=ا', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
     ),
     TeacherItem(
       id: 't4',
       name: 'أستاذة خديجة',
       subject: 'معلمة لغة انجليزية',
-      avatarUrl: 'https://placehold.co/60x60/FBBC05/FFFFFF?text=خ', // Yellowish
+      avatarUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
     ),
     // Add more teachers...
   ];
@@ -274,6 +281,7 @@ class _ChatListItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
+          spacing: 12,
           children: [
             // Avatar with Online Indicator
             Stack(
@@ -300,73 +308,75 @@ class _ChatListItem extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(width: 12),
-            // Name and Last Message
             Expanded(
               child: Column(
+                spacing: 4,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    chat.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: _MyMessagesTab.primaryText,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          chat.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: _MyMessagesTab.primaryText,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        chat.timeAgo,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: _MyMessagesTab.secondaryText,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    chat.lastMessage,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: chat.unreadCount > 0
-                          ? _MyMessagesTab.primaryText
-                          : _MyMessagesTab.secondaryText,
-                      fontWeight: chat.unreadCount > 0
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          chat.lastMessage,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: chat.unreadCount > 0
+                                ? _MyMessagesTab.primaryText
+                                : _MyMessagesTab.secondaryText,
+                            fontWeight: chat.unreadCount > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (chat.unreadCount > 0)
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(10, 4, 10, 2),
+                          decoration: BoxDecoration(
+                            color: _MyMessagesTab.primaryGreen,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Center(
+                            child: Text(
+                              chat.unreadCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox(height: 18), // Placeholder for alignment
+                    ],
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 12),
-            // Time and Unread Count
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  chat.timeAgo,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: _MyMessagesTab.secondaryText,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (chat.unreadCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _MyMessagesTab.primaryGreen,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      chat.unreadCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                else
-                  const SizedBox(height: 18), // Placeholder for alignment
-              ],
             ),
           ],
         ),
