@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
+import 'package:ramla_school/screens/chats/presentations/messages.dart';
 import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
@@ -44,7 +45,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         _pages = [
           const Home(),
           const TimetableScreen(),
-          const _ChatScreen(),
+          const MessagesScreen(),
           const FaqsScreen(),
         ];
         _navBarItems = [
@@ -58,7 +59,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
         _pages = [
           const Home(), // Can be replaced with TeacherDashboard
           const TimetableScreen(),
-          const _ChatScreen(),
+          const MessagesScreen(),
           const _MyClassScreen(),
         ];
         _navBarItems = [
