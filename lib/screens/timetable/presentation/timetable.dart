@@ -282,16 +282,29 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   void _onDaySelected(DateTime date) {
-    setState(() {
-      _selectedDate = DateUtils.dateOnly(date);
-      _selectedDayTimeline =
-          _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
-    });
+  int pageIndex = _daysForCurrentMonth.indexWhere(
+    (d) => DateUtils.isSameDay(d.date, date),
+  );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
-  }
+  if (pageIndex == -1) return; // safety
+
+  setState(() {
+    _selectedDate = DateUtils.dateOnly(date);
+    _selectedDayTimeline =
+        _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
+  });
+
+  // Animate PageView to that day's page
+  _pageController.animateToPage(
+    pageIndex,
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
+  );
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _scrollToSelectedDay();
+  });
+}
 
   void _onPrevMonth() {
     if (_currentDisplayMonth.year == _firstLessonYear &&
