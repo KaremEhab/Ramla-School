@@ -73,6 +73,7 @@ class _FaqsScreenState extends State<FaqsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false, // disables the back button
         forceMaterialTransparency: true,
         // --- End Shadowless AppBar ---
         centerTitle: true,
