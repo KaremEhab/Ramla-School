@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
+import 'package:ramla_school/screens/chats/presentations/messages.dart';
+import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -15,6 +17,7 @@ class LayoutScreen extends StatefulWidget {
 class _LayoutScreenState extends State<LayoutScreen> {
   int _currentIndex = 0;
   late PageController _pageController;
+  DateTime? _lastPressed;
 
   List<Widget> _pages = [];
   List<BottomNavigationBarItem> _navBarItems = [];
@@ -43,8 +46,8 @@ class _LayoutScreenState extends State<LayoutScreen> {
         _pages = [
           const Home(),
           const TimetableScreen(),
-          const _ChatScreen(),
-          const _FaqsScreen(),
+          const MessagesScreen(),
+          const FaqsScreen(),
         ];
         _navBarItems = [
           _buildNavItem(IconlyLight.home, IconlyBold.home, ''),
@@ -55,9 +58,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
         break;
       case UserRole.teacher:
         _pages = [
-          const Home(), // Can be replaced with TeacherDashboard
+          const Home(),
           const TimetableScreen(),
-          const _ChatScreen(),
+          const MessagesScreen(),
           const _MyClassScreen(),
         ];
         _navBarItems = [
@@ -82,7 +85,6 @@ class _LayoutScreenState extends State<LayoutScreen> {
     }
   }
 
-  /// Helper to create a BottomNavigationBarItem
   BottomNavigationBarItem _buildNavItem(
     IconData icon,
     IconData activeIcon,
@@ -95,14 +97,12 @@ class _LayoutScreenState extends State<LayoutScreen> {
     );
   }
 
-  /// Called when a new page is displayed by swiping
   void _onPageChanged(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-  /// Called when a new tab is tapped
   void _onNavTapped(int index) {
     _pageController.animateToPage(
       index,
@@ -119,65 +119,57 @@ class _LayoutScreenState extends State<LayoutScreen> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _pages, // Disable swiping
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onNavTapped,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
 
-        // --- Styling ---
-        type: BottomNavigationBarType.fixed, // Shows all labels
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryGreen,
-        unselectedItemColor: iconGrey,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
+    return WillPopScope(
+      onWillPop: () async {
+        if (_currentIndex != 0) {
+          _onNavTapped(0);
+          return false;
+        }
+
+        final now = DateTime.now();
+        if (_lastPressed == null ||
+            now.difference(_lastPressed!) > const Duration(seconds: 2)) {
+          _lastPressed = now;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('اضغط رجوع مرة أخرى لإغلاق التطبيق'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return false;
+        }
+
+        // Exit app
+        SystemNavigator.pop();
+        return true;
+      },
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: _onPageChanged,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _pages,
         ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.normal,
-          fontSize: 12,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onNavTapped,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: primaryGreen,
+          unselectedItemColor: iconGrey,
+          elevation: 0,
+          items: _navBarItems,
         ),
-        elevation: 0,
-        items: _navBarItems,
       ),
     );
   }
 }
 
 // --- PLACEHOLDER SCREENS ---
-// (These would be in their own files in a real app)
-
-class _TimetableScreen extends StatelessWidget {
-  const _TimetableScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة الجدول الدراسي')));
-  }
-}
-
-class _ChatScreen extends StatelessWidget {
-  const _ChatScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة المحادثات')));
-  }
-}
-
-class _FaqsScreen extends StatelessWidget {
-  const _FaqsScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة الأسئلة الشائعة')));
-  }
-}
 
 class _MyClassScreen extends StatelessWidget {
   const _MyClassScreen();
