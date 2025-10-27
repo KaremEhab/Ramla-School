@@ -346,20 +346,21 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-      title: Text(
-        'الجدول الدراسي ${_currentDisplayMonth.year}',
-        style: const TextStyle(
-          color: primaryGreen,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
+  return AppBar(
+    automaticallyImplyLeading: false, // 👈 disables the back button
+    backgroundColor: Colors.white,
+    elevation: 0,
+    centerTitle: true,
+    title: Text(
+      'الجدول الدراسي ${_currentDisplayMonth.year}',
+      style: const TextStyle(
+        color: _TimetableScreenState.primaryGreen,
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildMonthSelector() {
     String prevMonth = DateFormat.MMMM('ar').format(
