@@ -1,6 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+// --- Add imports for your models ---
+// Assuming these paths are correct relative to your project structure
+import 'package:ramla_school/core/models/users/teacher_model.dart';
+import 'package:ramla_school/core/models/lesson_model.dart'; // Import REAL LessonModel
+import 'package:ramla_school/core/app/constants.dart';
+import 'package:ramla_school/screens/chats/presentation/chat_details.dart'; // For UserStatus, Gender, Grade, SchoolSubject enums
 
-// --- Models for Mock Data ---
+// --- Models for Mock Data (ChatItem remains the same) ---
 class ChatItem {
   final String id;
   final String name;
@@ -21,21 +28,7 @@ class ChatItem {
   });
 }
 
-class TeacherItem {
-  final String id;
-  final String name;
-  final String subject;
-  final String avatarUrl;
-  final bool isOnline;
-
-  TeacherItem({
-    required this.id,
-    required this.name,
-    required this.subject,
-    required this.avatarUrl,
-    this.isOnline = false,
-  });
-}
+// TeacherItem is no longer needed as we use TeacherModel
 
 // --- Main Screen Widget ---
 class MessagesScreen extends StatefulWidget {
@@ -70,7 +63,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       lastMessage: 'ممتاز يا ندى',
       timeAgo: '2 د',
       avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       unreadCount: 1,
       isOnline: true,
     ),
@@ -80,7 +73,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       lastMessage: 'هذا صحيح يا ندى',
       timeAgo: '5 د',
       avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       unreadCount: 2,
     ),
     ChatItem(
@@ -89,40 +82,102 @@ class _MessagesScreenState extends State<MessagesScreen>
       lastMessage: 'نعم هناك امتحان غدا',
       timeAgo: '1 س',
       avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
     ),
     // Add more chats...
   ];
 
-  final List<TeacherItem> _teachers = [
-    TeacherItem(
+  // --- Updated Mock Data using TeacherModel ---
+  final List<TeacherModel> _teachers = [
+    TeacherModel(
       id: 't1',
-      name: 'أستاذة سميرة',
-      subject: 'معلمة رياضيات',
-      avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
-      isOnline: true,
+      firstName: 'أستاذة',
+      lastName: 'سميرة',
+      email: 'samira@example.com',
+      imageUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
+      status: UserStatus.online, // Using enum
+      gender: Gender.female, // Using enum
+      createdAt: DateTime.now().subtract(const Duration(days: 10)),
+      // Use your actual LessonModel now
+      subjects: [
+        LessonModel(
+          id: 'math9',
+          subject: SchoolSubject.math, // Use enum
+          // teacher: null, // Teacher might be recursive here, handle appropriately
+          isBreak: false,
+          breakTitle: '',
+          duration: 45,
+          startTime: Timestamp.now(), // Placeholder
+          endTime: Timestamp.now(), // Placeholder
+        ),
+      ],
     ),
-    TeacherItem(
+    TeacherModel(
       id: 't2',
-      name: 'أستاذة فرح',
-      subject: 'معلمة علوم',
-      avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+      firstName: 'أستاذة',
+      lastName: 'فرح',
+      email: 'farah@example.com',
+      imageUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
+      status: UserStatus.offline,
+      gender: Gender.female,
+      createdAt: DateTime.now().subtract(const Duration(days: 20)),
+      subjects: [
+        LessonModel(
+          id: 'sci9',
+          subject: SchoolSubject.science,
+          isBreak: false,
+          breakTitle: '',
+          duration: 45,
+          startTime: Timestamp.now(),
+          endTime: Timestamp.now(),
+        ),
+      ],
     ),
-    TeacherItem(
+    TeacherModel(
       id: 't3',
-      name: 'أستاذة اسماء',
-      subject: 'معلمة لغة عربية',
-      avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+      firstName: 'أستاذة',
+      lastName: 'اسماء',
+      email: 'asmaa@example.com',
+      imageUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
+      status: UserStatus.offline,
+      gender: Gender.female,
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      subjects: [
+        LessonModel(
+          id: 'arab9',
+          subject: SchoolSubject.arabic,
+          isBreak: false,
+          breakTitle: '',
+          duration: 45,
+          startTime: Timestamp.now(),
+          endTime: Timestamp.now(),
+        ),
+      ],
     ),
-    TeacherItem(
+    TeacherModel(
       id: 't4',
-      name: 'أستاذة خديجة',
-      subject: 'معلمة لغة انجليزية',
-      avatarUrl:
-          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png', // Yellowish
+      firstName: 'أستاذة',
+      lastName: 'خديجة',
+      email: 'khadija@example.com',
+      imageUrl:
+          'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
+      status: UserStatus.offline,
+      gender: Gender.female,
+      createdAt: DateTime.now().subtract(const Duration(days: 40)),
+      subjects: [
+        LessonModel(
+          id: 'eng9',
+          subject: SchoolSubject.english,
+          isBreak: false,
+          breakTitle: '',
+          duration: 45,
+          startTime: Timestamp.now(),
+          endTime: Timestamp.now(),
+        ),
+      ],
     ),
     // Add more teachers...
   ];
@@ -216,7 +271,7 @@ class _MyMessagesTab extends StatelessWidget {
       return const Center(child: Text('لا توجد رسائل حالياً'));
     }
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
       itemCount: chats.length,
       itemBuilder: (context, index) {
         final chat = chats[index];
@@ -233,7 +288,8 @@ class _MyMessagesTab extends StatelessWidget {
 
 // --- Widget for "Class Teachers" Tab Content ---
 class _ClassTeachersTab extends StatelessWidget {
-  final List<TeacherItem> teachers;
+  // --- Updated parameter type ---
+  final List<TeacherModel> teachers;
   const _ClassTeachersTab({required this.teachers});
 
   // --- Colors ---
@@ -249,10 +305,11 @@ class _ClassTeachersTab extends StatelessWidget {
       return const Center(child: Text('لا يوجد معلمين متاحين حالياً'));
     }
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
       itemCount: teachers.length,
       itemBuilder: (context, index) {
         final teacher = teachers[index];
+        // --- Pass TeacherModel ---
         return _TeacherListItem(teacher: teacher);
       },
       separatorBuilder: (context, index) => const Divider(
@@ -275,13 +332,22 @@ class _ChatListItem extends StatelessWidget {
     return InkWell(
       // Make it tappable
       onTap: () {
-        // TODO: Navigate to the actual chat screen with this chat.id
         print('Tapped on chat with ${chat.name}');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatDetailsScreen(
+              recipientName: chat.name,
+              recipientAvatarUrl: chat.avatarUrl,
+              recipientIsOnline: chat.isOnline,
+            ),
+          ),
+        );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
-          spacing: 12,
+          // spacing: 12, // Removed - use SizedBox
           children: [
             // Avatar with Online Indicator
             Stack(
@@ -308,9 +374,11 @@ class _ChatListItem extends StatelessWidget {
                   ),
               ],
             ),
+            const SizedBox(width: 12), // Added SizedBox
+            // Name, Message, Time, Count
             Expanded(
               child: Column(
-                spacing: 4,
+                // spacing: 4, // Removed - use SizedBox
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -324,8 +392,11 @@ class _ChatListItem extends StatelessWidget {
                             fontSize: 16,
                             color: _MyMessagesTab.primaryText,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(width: 8), // Space before time
                       Text(
                         chat.timeAgo,
                         style: const TextStyle(
@@ -335,8 +406,11 @@ class _ChatListItem extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 4), // Added SizedBox
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.end, // Align badge to bottom
                     children: [
                       Flexible(
                         child: Text(
@@ -354,25 +428,29 @@ class _ChatListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(width: 8), // Space before badge
                       if (chat.unreadCount > 0)
                         Container(
-                          padding: const EdgeInsets.fromLTRB(10, 4, 10, 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ), // Adjusted padding
                           decoration: BoxDecoration(
                             color: _MyMessagesTab.primaryGreen,
-                            borderRadius: BorderRadius.circular(100),
+                            borderRadius: BorderRadius.circular(
+                              100,
+                            ), // Make it rounder
                           ),
-                          child: Center(
-                            child: Text(
-                              chat.unreadCount.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          child: Text(
+                            chat.unreadCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12, // Slightly smaller
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                      else
-                        const SizedBox(height: 18), // Placeholder for alignment
+                        ),
+                      // No need for placeholder SizedBox if unreadCount is 0
                     ],
                   ),
                 ],
@@ -386,19 +464,28 @@ class _ChatListItem extends StatelessWidget {
 }
 
 class _TeacherListItem extends StatelessWidget {
-  final TeacherItem teacher;
+  // --- Updated parameter type ---
+  final TeacherModel teacher;
   const _TeacherListItem({required this.teacher});
 
   @override
   Widget build(BuildContext context) {
+    // Determine the subject string using the SchoolSubject enum extension
+    String subjectDisplay =
+        teacher.subjects.isNotEmpty && teacher.subjects.first.subject != null
+        ? 'معلمة ${teacher.subjects.first.subject!.name}' // Access name via extension
+        : 'معلمة'; // Fallback if no subjects listed or subject is null
+
+    bool isOnline = teacher.status == UserStatus.online; // Check status enum
+
     return InkWell(
       // Make it tappable
       onTap: () {
         // TODO: Navigate to chat screen with this teacher.id (creating new if needed)
-        print('Tapped on teacher ${teacher.name}');
+        print('Tapped on teacher ${teacher.fullName}'); // Use fullName getter
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
           children: [
             // Avatar with Online Indicator
@@ -407,10 +494,16 @@ class _TeacherListItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: NetworkImage(teacher.avatarUrl),
+                  backgroundImage: NetworkImage(
+                    teacher.imageUrl,
+                  ), // Use imageUrl
                   backgroundColor: Colors.grey[200],
+                  // Basic error handling for image
+                  onBackgroundImageError: (exception, stackTrace) {
+                    print('Error loading image: $exception');
+                  },
                 ),
-                if (teacher.isOnline)
+                if (isOnline) // Check derived boolean
                   Positioned(
                     bottom: 0,
                     right: 0, // In RTL, right is visually bottom-left
@@ -433,16 +526,18 @@ class _TeacherListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    teacher.name,
+                    teacher.fullName, // Use fullName getter
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: _ClassTeachersTab.primaryText,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    teacher.subject,
+                    subjectDisplay, // Use derived subject string
                     style: const TextStyle(
                       fontSize: 14,
                       color: _ClassTeachersTab.secondaryText,
@@ -462,7 +557,9 @@ class _TeacherListItem extends StatelessWidget {
               ),
               onPressed: () {
                 // TODO: Navigate to chat screen with this teacher.id
-                print('Start chat with ${teacher.name}');
+                print(
+                  'Start chat with ${teacher.fullName}',
+                ); // Use fullName getter
               },
             ),
           ],
@@ -471,3 +568,6 @@ class _TeacherListItem extends StatelessWidget {
     );
   }
 }
+
+// Removed placeholder Grade, GradeHelper, and LessonModel definitions
+// Assuming they are correctly defined in your 'constants.dart' and 'lesson_model.dart' files

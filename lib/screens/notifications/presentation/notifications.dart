@@ -12,7 +12,6 @@ class Notifications extends StatelessWidget {
   ); // Light green background
   static const Color primaryText = Color(0xFF333333);
   static const Color secondaryText = Color(0xFF666666);
-  static const Color accentOrange = Color(0xFFF39C12);
 
   @override
   Widget build(BuildContext context) {
@@ -90,36 +89,11 @@ class _NotificationCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Icon / Image with Badge
-          Stack(
-            clipBehavior: Clip.none, // Allow badge to overflow
-            children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundImage: NetworkImage(notification.imageUrl),
-                backgroundColor: Colors.grey[200], // Fallback color
-              ),
-              if (notification.isNew)
-                Positioned(
-                  top: -5,
-                  right: -5, // In RTL, right is correct for top-left visual
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Notifications.accentOrange,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Text(
-                      '1', // Or fetch count dynamically
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+          // 1. Image
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: NetworkImage(notification.imageUrl),
+            backgroundColor: Colors.grey[200], // Fallback color
           ),
           const SizedBox(width: 16), // Space between image and text
           // 2. Text Content
@@ -127,13 +101,27 @@ class _NotificationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  notification.title,
-                  style: const TextStyle(
-                    color: Notifications.primaryText,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        notification.title,
+                        style: const TextStyle(
+                          color: Notifications.primaryText,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      notification.timeAgo,
+                      style: const TextStyle(
+                        color: Notifications.secondaryText,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -142,14 +130,6 @@ class _NotificationCard extends StatelessWidget {
                     color: Notifications.secondaryText,
                     fontSize: 14,
                     height: 1.4, // Adjust line spacing if needed
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  notification.timeAgo,
-                  style: const TextStyle(
-                    color: Notifications.secondaryText,
-                    fontSize: 12,
                   ),
                 ),
               ],

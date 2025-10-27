@@ -3,8 +3,8 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 
 class StudentModel extends UserModel {
-  final String className;
-  final String classNumber;
+  final int grade;
+  final int classNumber;
 
   const StudentModel({
     required super.id,
@@ -15,19 +15,19 @@ class StudentModel extends UserModel {
     required super.status,
     required super.gender,
     required super.createdAt,
-    required this.className,
+    required this.grade,
     required this.classNumber,
   }) : super(role: UserRole.student); // Role is fixed
 
   // Helper getter for the example: "طالبة بالصف التاسع/آول"
   String get fullClassDescription {
-    return 'طالبة بالصف $className/$classNumber';
+    return 'طالبة بالصف $grade/$classNumber';
   }
 
   @override
   List<Object?> get props => [
     ...super.props, // Gets all props from base UserModel
-    className,
+    grade,
     classNumber,
   ];
 
@@ -44,7 +44,7 @@ class StudentModel extends UserModel {
       'gender': gender.name,
       'createdAt': Timestamp.fromDate(createdAt),
       // Student-specific fields
-      'className': className,
+      'grade': grade,
       'classNumber': classNumber,
     };
   }
@@ -62,8 +62,8 @@ class StudentModel extends UserModel {
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      className: map['className'] ?? '',
-      classNumber: map['classNumber'] ?? '',
+      grade: map['grade'] ?? 1,
+      classNumber: map['classNumber'] ?? 1,
     );
   }
 
@@ -78,8 +78,8 @@ class StudentModel extends UserModel {
     UserStatus? status,
     Gender? gender,
     DateTime? createdAt,
-    String? className,
-    String? classNumber,
+    int? grade,
+    int? classNumber,
   }) {
     return StudentModel(
       id: id ?? this.id,
@@ -90,7 +90,7 @@ class StudentModel extends UserModel {
       status: status ?? this.status,
       gender: gender ?? this.gender,
       createdAt: createdAt ?? this.createdAt,
-      className: className ?? this.className,
+      grade: grade ?? this.grade,
       classNumber: classNumber ?? this.classNumber,
     );
   }

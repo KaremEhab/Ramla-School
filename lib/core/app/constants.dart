@@ -326,7 +326,7 @@ final List<NotificationModel> notifications = [
     title: 'تنويه هام',
     body: 'سيتم تعطيل الدراسة غداً بسبب الاحوال الجوية',
     timeAgo: 'منذ 1 دقيقة',
-    imageUrl: 'https://placehold.co/60x60/F39C12/FFFFFF?text=!', // Orange !
+    imageUrl: 'https://i.ibb.co/0V9dQbBL/news.png', // Orange !
     isNew: true,
   ),
   NotificationModel(
@@ -334,7 +334,7 @@ final List<NotificationModel> notifications = [
     title: 'تنويه هام',
     body: 'سيتم تعطيل الدراسة غداً بسبب الاحوال الجوية',
     timeAgo: 'منذ 1 دقيقة',
-    imageUrl: 'https://placehold.co/60x60/F39C12/FFFFFF?text=!', // Orange !
+    imageUrl: 'https://i.ibb.co/0V9dQbBL/news.png', // Orange !
     isNew: true,
   ),
   NotificationModel(
@@ -342,7 +342,7 @@ final List<NotificationModel> notifications = [
     title: 'تنويه هام',
     body: 'سيتم تعطيل الدراسة غداً بسبب الاحوال الجوية',
     timeAgo: 'منذ 1 دقيقة',
-    imageUrl: 'https://placehold.co/60x60/AAAAAA/FFFFFF?text=i', // Grey i
+    imageUrl: 'https://i.ibb.co/0V9dQbBL/news.png', // Grey i
     isNew: false,
   ),
   NotificationModel(
@@ -350,7 +350,7 @@ final List<NotificationModel> notifications = [
     title: 'تنويه هام',
     body: 'سيتم تعطيل الدراسة غداً بسبب الاحوال الجوية',
     timeAgo: 'منذ 1 دقيقة',
-    imageUrl: 'https://placehold.co/60x60/AAAAAA/FFFFFF?text=i', // Grey i
+    imageUrl: 'https://i.ibb.co/0V9dQbBL/news.png', // Grey i
     isNew: false,
   ),
 ];

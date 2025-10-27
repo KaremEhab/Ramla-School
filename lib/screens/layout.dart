@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
-import 'package:ramla_school/screens/chats/presentation/messages.dart';
+import 'package:ramla_school/screens/chats/presentation/chats.dart';
 import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 

@@ -1,5 +1,6 @@
 // Custom Clipper for the top-right green shape
 import 'package:flutter/material.dart';
+import 'package:ramla_school/core/app/constants.dart';
 
 class CircleClipper extends CustomClipper<Path> {
   @override
@@ -29,5 +30,18 @@ class CircleClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return false;
+  }
+}
+
+class GradeHelper {
+  static Grade fromString(String? gradeString) {
+    // Basic implementation, assumes gradeString matches enum name
+    if (gradeString == null) return Grade.grade9; // Default or error handling
+    try {
+      return Grade.values.firstWhere((e) => e.name == gradeString);
+    } catch (e) {
+      print("Error parsing grade: $gradeString. Defaulting to grade9.");
+      return Grade.grade9; // Fallback
+    }
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/news_model.dart';
+import 'package:ramla_school/core/widgets.dart';
+import 'package:ramla_school/screens/news/presentation/news.dart';
 import 'package:ramla_school/screens/notifications/presentation/notifications.dart';
 
 class Home extends StatelessWidget {
@@ -28,25 +30,24 @@ class Home extends StatelessWidget {
               context,
               title: 'آخر الأخبار',
               onTapSeeAll: () {
-                // TODO: Navigate to All News Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllNews()),
+                );
               },
             ),
             const SizedBox(height: 16),
 
             // 📰 Dynamic News List
             ListView.builder(
-              itemCount: newsList.length,
+              itemCount: newsList.length > 7 ? 7 : newsList.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 final news = newsList[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
-                  child: _NewsCardWidget(
-                    title: news.title,
-                    category: news.category,
-                    imageUrl: news.images.first,
-                  ),
+                  child: NewsCardWidget(news: news),
                 );
               },
             ),
@@ -175,98 +176,4 @@ class Home extends StatelessWidget {
       ],
     );
   }
-}
-
-// News Card Widget
-class _NewsCardWidget extends StatelessWidget {
-  final String title;
-  final String category;
-  final String imageUrl;
-
-  const _NewsCardWidget({
-    required this.title,
-    required this.category,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // News Image
-          SizedBox(
-            width: 80,
-            height: 80,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.error, color: Colors.red),
-                ),
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey[200],
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // News Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  category,
-                  style: const TextStyle(
-                    color: _NewsCardWidget.accentOrange,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: _NewsCardWidget.primaryText,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static const Color primaryText = Color(0xFF333333);
-  static const Color accentOrange = Color(0xFFF39C12);
 }
