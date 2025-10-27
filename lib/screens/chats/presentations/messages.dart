@@ -142,10 +142,7 @@ class _MessagesScreenState extends State<MessagesScreen>
         forceMaterialTransparency: true,
         // --- End Shadowless AppBar ---
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: primaryGreen),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false, // disables the back button
         title: const Text(
           'الرسائل',
           style: TextStyle(
