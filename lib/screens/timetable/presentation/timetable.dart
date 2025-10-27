@@ -282,29 +282,29 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   void _onDaySelected(DateTime date) {
-  int pageIndex = _daysForCurrentMonth.indexWhere(
-    (d) => DateUtils.isSameDay(d.date, date),
-  );
+    int pageIndex = _daysForCurrentMonth.indexWhere(
+      (d) => DateUtils.isSameDay(d.date, date),
+    );
 
-  if (pageIndex == -1) return; // safety
+    if (pageIndex == -1) return; // safety
 
-  setState(() {
-    _selectedDate = DateUtils.dateOnly(date);
-    _selectedDayTimeline =
-        _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
-  });
+    setState(() {
+      _selectedDate = DateUtils.dateOnly(date);
+      _selectedDayTimeline =
+          _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
+    });
 
-  // Animate PageView to that day's page
-  _pageController.animateToPage(
-    pageIndex,
-    duration: const Duration(milliseconds: 300),
-    curve: Curves.easeInOut,
-  );
+    // Animate PageView to that day's page
+    _pageController.animateToPage(
+      pageIndex,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _scrollToSelectedDay();
-  });
-}
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDay();
+    });
+  }
 
   void _onPrevMonth() {
     if (_currentDisplayMonth.year == _firstLessonYear &&
@@ -359,21 +359,21 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-  return AppBar(
-    automaticallyImplyLeading: false, // 👈 disables the back button
-    backgroundColor: Colors.white,
-    elevation: 0,
-    centerTitle: true,
-    title: Text(
-      'الجدول الدراسي ${_currentDisplayMonth.year}',
-      style: const TextStyle(
-        color: _TimetableScreenState.primaryGreen,
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
+    return AppBar(
+      automaticallyImplyLeading: false, // 👈 disables the back button
+      backgroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        'الجدول الدراسي ${_currentDisplayMonth.year}',
+        style: const TextStyle(
+          color: _TimetableScreenState.primaryGreen,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildMonthSelector() {
     String prevMonth = DateFormat.MMMM('ar').format(
