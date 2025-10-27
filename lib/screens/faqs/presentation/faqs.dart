@@ -76,10 +76,6 @@ class _FaqsScreenState extends State<FaqsScreen> {
         forceMaterialTransparency: true,
         // --- End Shadowless AppBar ---
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: primaryGreen),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         title: const Text(
           'الأسئلة الشائعة',
           style: TextStyle(
