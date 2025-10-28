@@ -47,8 +47,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         gender: Gender.male,
         createdAt: DateTime.now(),
         subjects: [
-          SchoolSubject.mathematics,
-          SchoolSubject.physics,
+          SchoolSubject.math,
+          SchoolSubject.arabic,
         ],
       ),
       StudentModel(
