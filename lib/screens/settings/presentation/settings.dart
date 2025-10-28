@@ -201,7 +201,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             status: UserStatus.online,
                             gender: gender.value,
                             createdAt: DateTime.now(),
-                            subjects: [SchoolSubject.mathematics],
+                            subjects: [SchoolSubject.math],
                           ),
                         UserRole.student => StudentModel(
                             id: Random().nextInt(1000).toString(),
