@@ -17,19 +17,21 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   bool _isPasswordObscured = true;
   bool _isConfirmPasswordObscured = true;
-  String? _selectedRole;
-  final List<String> _roles = ['طالبة', 'أستاذة'];
+  UserRole? _selectedRole;
+  final List<UserRole> _roles = [UserRole.student, UserRole.teacher];
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -106,16 +108,32 @@ class _SignupState extends State<Signup> {
                           ),
                           const SizedBox(height: 32),
 
-                          // 4. Full Name Field
+                          // 4. First Name Field
                           TextFormField(
-                            controller: _nameController,
+                            controller: _firstNameController,
                             decoration: _buildInputDecoration(
-                              hint: 'الاسم بالكامل',
+                              hint: 'اسمك',
                               icon: Icons.person_outline,
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'الرجاء إدخال الاسم بالكامل';
+                                return 'الرجاء إدخال اسمك بشكل صحيح';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+
+                          // 4. Last Name Field
+                          TextFormField(
+                            controller: _lastNameController,
+                            decoration: _buildInputDecoration(
+                              hint: 'اسم العائلة',
+                              icon: Icons.person_outline,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'الرجاء إدخال اسم العائلة بشكل صحيح';
                               }
                               return null;
                             },
@@ -185,7 +203,7 @@ class _SignupState extends State<Signup> {
                           const SizedBox(height: 20),
 
                           // 8. Role Dropdown
-                          DropdownButtonFormField<String>(
+                          DropdownButtonFormField<UserRole>(
                             value: _selectedRole,
                             hint: const Text(
                               'طالبة / أستاذة',
@@ -195,12 +213,13 @@ class _SignupState extends State<Signup> {
                               icon: Icons.keyboard_arrow_down_outlined,
                               isDropdown: true,
                             ),
-                            items: _roles.map((String role) {
-                              return DropdownMenuItem<String>(
+                            items: _roles.map((UserRole role) {
+                              return DropdownMenuItem<UserRole>(
                                 value: role,
-                                child: Text(role),
+                                child: Text(getRoleNameInArabic(role)),
                               );
                             }).toList(),
+
                             onChanged: (newValue) {
                               setState(() {
                                 _selectedRole = newValue;
@@ -285,27 +304,27 @@ class _SignupState extends State<Signup> {
   }
 
   Future<void> _signup() async {
-    currentRole = UserRole.student;
-    await CacheHelper.saveData(key: 'currentRole', value: currentRole);
+    currentRole = _selectedRole!;
+    await CacheHelper.saveData(key: 'currentRole', value: currentRole!.name);
 
     if (_formKey.currentState!.validate()) {
       // Form is valid
-      String name = _nameController.text;
+      String firstName = _firstNameController.text;
+      String lastName = _lastNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
-      String role = _selectedRole!;
+      UserRole role = _selectedRole!;
 
       // TODO: Add your Firebase/Cubit signup logic here
       print(
-        'Signing up with Name: $name, Email: $email, Password: $password, Role: $role',
+        'Signing up with First name: $firstName, Last name: $lastName, Email: $email, Password: $password, Role: ${role.name}',
       );
 
-      if (context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LayoutScreen()),
-        );
-      }
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LayoutScreen()),
+      );
     }
   }
 

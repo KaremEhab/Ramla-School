@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/document_model.dart';
 import 'package:ramla_school/screens/documents/presentation/documents.dart';
-import 'package:ramla_school/screens/timetable/data/fake_timetable.dart';
+import 'package:ramla_school/screens/timetable/data/fake_student_timetable.dart';
 
 // ------------------- DATA MODELS -------------------
 
@@ -20,6 +20,7 @@ class LessonEntry extends TimelineEntry {
   final String subject;
   final String teacher;
   final String duration;
+  final String? extraInfo;
   final Color color;
   final List<String> documentUrls; // 👈 new field
 
@@ -28,6 +29,7 @@ class LessonEntry extends TimelineEntry {
     required this.teacher,
     required this.duration,
     required this.color,
+    this.extraInfo = '',
     required super.startTime,
     required super.endTime,
     this.documentUrls = const [],
@@ -438,15 +440,15 @@ class _TimetableScreenState extends State<TimetableScreen> {
         height: 80,
         alignment: Alignment.center,
         child: const Text(
-          'لا توجد دروس مجدولة في هذا الشهر',
+          'لا توجد دروس في هذا الشهر',
           style: TextStyle(color: secondaryText, fontSize: 16),
         ),
       );
     }
 
     return SingleChildScrollView(
-      controller: _dayScrollController,
       scrollDirection: Axis.horizontal,
+      controller: _dayScrollController,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(

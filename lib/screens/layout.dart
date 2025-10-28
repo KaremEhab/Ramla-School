@@ -5,6 +5,7 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
 import 'package:ramla_school/screens/chats/presentation/chats.dart';
 import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
+import 'package:ramla_school/screens/timetable/presentation/teacher_timetable.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
-    _setupNavigationForRole(currentRole ?? UserRole.student);
+    _setupNavigationForRole(currentRole ?? UserRole.teacher);
   }
 
   @override
@@ -59,7 +60,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
       case UserRole.teacher:
         _pages = [
           const Home(),
-          const TimetableScreen(),
+          const TeacherTimetableScreen(),
           const MessagesScreen(),
           const _MyClassScreen(),
         ];

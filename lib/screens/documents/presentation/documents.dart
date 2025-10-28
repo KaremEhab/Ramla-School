@@ -145,7 +145,7 @@ class _DocumentsState extends State<Documents> {
       ),
 
       // ✅ (الإصلاح 3) تم تصحيح المنطق ليتطابق مع التعليق
-      floatingActionButton: currentRole != UserRole.teacher
+      floatingActionButton: currentRole == UserRole.teacher
           ? FloatingActionButton(
               backgroundColor: Documents.primaryGreen,
               onPressed: _showAddDocumentSheet,

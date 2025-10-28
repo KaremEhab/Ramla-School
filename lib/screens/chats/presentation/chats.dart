@@ -100,18 +100,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       gender: Gender.female, // Using enum
       createdAt: DateTime.now().subtract(const Duration(days: 10)),
       // Use your actual LessonModel now
-      subjects: [
-        LessonModel(
-          id: 'math9',
-          subject: SchoolSubject.math, // Use enum
-          // teacher: null, // Teacher might be recursive here, handle appropriately
-          isBreak: false,
-          breakTitle: '',
-          duration: 45,
-          startTime: Timestamp.now(), // Placeholder
-          endTime: Timestamp.now(), // Placeholder
-        ),
-      ],
+      subjects: [SchoolSubject.islamic],
     ),
     TeacherModel(
       id: 't2',
@@ -123,17 +112,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       status: UserStatus.offline,
       gender: Gender.female,
       createdAt: DateTime.now().subtract(const Duration(days: 20)),
-      subjects: [
-        LessonModel(
-          id: 'sci9',
-          subject: SchoolSubject.science,
-          isBreak: false,
-          breakTitle: '',
-          duration: 45,
-          startTime: Timestamp.now(),
-          endTime: Timestamp.now(),
-        ),
-      ],
+      subjects: [SchoolSubject.arabic],
     ),
     TeacherModel(
       id: 't3',
@@ -145,17 +124,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       status: UserStatus.offline,
       gender: Gender.female,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
-      subjects: [
-        LessonModel(
-          id: 'arab9',
-          subject: SchoolSubject.arabic,
-          isBreak: false,
-          breakTitle: '',
-          duration: 45,
-          startTime: Timestamp.now(),
-          endTime: Timestamp.now(),
-        ),
-      ],
+      subjects: [SchoolSubject.english],
     ),
     TeacherModel(
       id: 't4',
@@ -167,17 +136,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       status: UserStatus.offline,
       gender: Gender.female,
       createdAt: DateTime.now().subtract(const Duration(days: 40)),
-      subjects: [
-        LessonModel(
-          id: 'eng9',
-          subject: SchoolSubject.english,
-          isBreak: false,
-          breakTitle: '',
-          duration: 45,
-          startTime: Timestamp.now(),
-          endTime: Timestamp.now(),
-        ),
-      ],
+      subjects: [SchoolSubject.math],
     ),
     // Add more teachers...
   ];
@@ -472,8 +431,8 @@ class _TeacherListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Determine the subject string using the SchoolSubject enum extension
     String subjectDisplay =
-        teacher.subjects.isNotEmpty && teacher.subjects.first.subject != null
-        ? 'معلمة ${teacher.subjects.first.subject!.name}' // Access name via extension
+        teacher.subjects.isNotEmpty && teacher.subjects.first.name != null
+        ? 'معلمة ${teacher.subjects.first.name}' // Access name via extension
         : 'معلمة'; // Fallback if no subjects listed or subject is null
 
     bool isOnline = teacher.status == UserStatus.online; // Check status enum

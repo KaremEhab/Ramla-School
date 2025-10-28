@@ -87,7 +87,14 @@ enum SchoolSubject {
   arabic,
   houseEconomics,
   practicalStudies,
-  art,
+  art;
+
+  static SchoolSubject fromString(String subject) {
+    return SchoolSubject.values.firstWhere(
+      (e) => e.name == subject,
+      orElse: () => SchoolSubject.math, // Default fallback
+    );
+  }
 }
 
 extension SubjectExtension on SchoolSubject {
@@ -134,6 +141,17 @@ extension SubjectExtension on SchoolSubject {
 }
 
 UserRole? currentRole;
+
+String getRoleNameInArabic(UserRole role) {
+  switch (role) {
+    case UserRole.student:
+      return 'طالبة';
+    case UserRole.teacher:
+      return 'أستاذة';
+    default:
+      return 'غير محدد';
+  }
+}
 
 // Dummy news list (replace this later with your backend data)
 final List<NewsModel> newsList = [

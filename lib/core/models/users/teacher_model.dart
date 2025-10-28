@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ramla_school/core/app/constants.dart';
-import 'package:ramla_school/core/models/lesson_model.dart';
 import 'package:ramla_school/core/models/subject_model.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 
 class TeacherModel extends UserModel {
-  final List<LessonModel> subjects;
+  final List<SchoolSubject> subjects;
   final String? _fullName;
 
   const TeacherModel({
@@ -18,7 +17,7 @@ class TeacherModel extends UserModel {
     required super.gender,
     required super.createdAt,
     required this.subjects,
-    String? fullName, // optional custom full name
+    String? fullName,
   }) : _fullName = fullName,
        super(role: UserRole.teacher);
 
@@ -37,8 +36,8 @@ class TeacherModel extends UserModel {
       'status': status.name,
       'gender': gender.name,
       'createdAt': Timestamp.fromDate(createdAt),
-      'subjects': subjects.map((s) => s.toMap()).toList(),
-      'fullName': fullName, // Include full name in map
+      'subjects': subjects.map((s) => s.name).toList(), // ✅ store enum names
+      'fullName': fullName,
     };
   }
 
@@ -52,12 +51,10 @@ class TeacherModel extends UserModel {
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      subjects:
-          (map['subjects'] as List<dynamic>?)
-              ?.map((e) => LessonModel.fromMap(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      fullName: map['fullName'], // Safe to load from Firebase if exists
+      subjects: (map['subjects'] as List<dynamic>? ?? [])
+          .map((s) => SchoolSubject.fromString(s.toString()))
+          .toList(), // ✅ convert back from string
+      fullName: map['fullName'],
     );
   }
 
@@ -72,7 +69,7 @@ class TeacherModel extends UserModel {
     UserStatus? status,
     Gender? gender,
     DateTime? createdAt,
-    List<LessonModel>? subjects,
+    List<SchoolSubject>? subjects,
     String? fullName,
   }) {
     return TeacherModel(
