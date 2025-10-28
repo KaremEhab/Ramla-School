@@ -5,6 +5,7 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
 import 'package:ramla_school/screens/chats/presentation/chats.dart';
 import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
+import 'package:ramla_school/screens/analytics/presentation/analytics.dart';
 import 'package:ramla_school/screens/timetable/presentation/teacher_timetable.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
@@ -74,7 +75,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
       case UserRole.admin:
         _pages = [
           const _AdminDashboardScreen(),
-          const _AnalyticsScreen(),
+          const AnalyticsScreen(),
           const _SettingsScreen(),
         ];
         _navBarItems = [
