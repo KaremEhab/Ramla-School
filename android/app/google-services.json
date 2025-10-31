@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "513016340719",
+    "project_id": "ramla-school",
+    "storage_bucket": "ramla-school.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513016340719:android:d908675053f82db53ebb1a",
+        "android_client_info": {
+          "package_name": "com.ramla.ramla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_Di57gk76uUYCuFsuVJSUiJm9jqkCKWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

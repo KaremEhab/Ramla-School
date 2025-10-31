@@ -1,4 +1,4 @@
-package com.example.ramla_school;
+package com.ramla.ramla;
 
 import io.flutter.embedding.android.FlutterActivity;
 
