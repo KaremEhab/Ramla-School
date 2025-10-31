@@ -5,7 +5,9 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/home/presentation/home.dart';
 import 'package:ramla_school/screens/chats/presentation/chats.dart';
 import 'package:ramla_school/screens/faqs/presentation/faqs.dart';
+import 'package:ramla_school/screens/analytics/presentation/analytics.dart';
 import 'package:ramla_school/screens/timetable/presentation/teacher_timetable.dart';
+import 'package:ramla_school/screens/settings/presentation/settings.dart';
 import 'package:ramla_school/screens/timetable/presentation/timetable.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -73,9 +75,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
         break;
       case UserRole.admin:
         _pages = [
-          const _AdminDashboardScreen(),
-          const _AnalyticsScreen(),
-          const _SettingsScreen(),
+          const Home(),
+          const AnalyticsScreen(),
+          const AdminSettingsScreen(),
         ];
         _navBarItems = [
           _buildNavItem(IconlyLight.home, IconlyBold.home, ''),

@@ -243,7 +243,7 @@ class _LoginState extends State<Login> {
       // TODO: Add your Firebase/Cubit login logic here
       print('Logging in with Email: $email, Password: $password');
 
-      currentRole = UserRole.student;
+      currentRole = UserRole.admin;
       await CacheHelper.saveData(key: 'currentRole', value: currentRole!.name);
 
       if (context.mounted) {
