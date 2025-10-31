@@ -19,6 +19,8 @@ class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _gradeController = TextEditingController();
+  final _classNumberController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -32,6 +34,8 @@ class _SignupState extends State<Signup> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _gradeController.dispose();
+    _classNumberController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -95,7 +99,7 @@ class _SignupState extends State<Signup> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 60),
+                          const SizedBox(height: 30),
 
                           // 3. Title
                           const Text(
@@ -159,6 +163,88 @@ class _SignupState extends State<Signup> {
                           ),
                           const SizedBox(height: 20),
 
+                          // 8. Role Dropdown
+                          DropdownButtonFormField<UserRole>(
+                            value: _selectedRole,
+                            hint: const Text(
+                              'طالبة / أستاذة',
+                              style: TextStyle(color: iconGrey),
+                            ),
+                            decoration: _buildInputDecoration(
+                              icon: Icons.keyboard_arrow_down_outlined,
+                              isDropdown: true,
+                            ),
+                            items: _roles.map((UserRole role) {
+                              return DropdownMenuItem<UserRole>(
+                                value: role,
+                                child: Text(getRoleNameInArabic(role)),
+                              );
+                            }).toList(),
+
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedRole = newValue;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                return 'الرجاء اختيار دورك';
+                              }
+                              return null;
+                            },
+                          ),
+                          if (_selectedRole != null) const SizedBox(height: 20),
+
+                          // 7. Class Grade Field
+                          if (_selectedRole != null)
+                            TextFormField(
+                              controller: _gradeController,
+                              keyboardType: TextInputType.number,
+                              decoration: _buildInputDecoration(
+                                hint: 'الصف الدراسي',
+                                icon: Icons.lock_outline,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'الرجاء اختيار الصف الدراسي';
+                                }
+                                if (int.parse(value) > 9) {
+                                  return 'يجب أن يكون الصف أصغر من التاسع';
+                                }
+                                if (int.parse(value) < 6) {
+                                  return 'يجب أن يكون الصف أكبر من السادس';
+                                }
+                                return null;
+                              },
+                            ),
+
+                          if (_selectedRole == UserRole.student)
+                            const SizedBox(height: 20),
+
+                          // 7. Class Number Field
+                          if (_selectedRole == UserRole.student)
+                            TextFormField(
+                              controller: _gradeController,
+                              keyboardType: TextInputType.number,
+                              decoration: _buildInputDecoration(
+                                hint: 'الفصل الدراسي',
+                                icon: Icons.lock_outline,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'الرجاء اختيار الفصل الدراسي';
+                                }
+                                if (int.parse(value) > 9) {
+                                  return 'يجب أن يكون الفصل أصغر من الآول';
+                                }
+                                if (int.parse(value) < 6) {
+                                  return 'يجب أن يكون الفصل أكبر من الثامن';
+                                }
+                                return null;
+                              },
+                            ),
+                          const SizedBox(height: 20),
+
                           // 6. Password Field
                           TextFormField(
                             controller: _passwordController,
@@ -200,38 +286,7 @@ class _SignupState extends State<Signup> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
 
-                          // 8. Role Dropdown
-                          DropdownButtonFormField<UserRole>(
-                            value: _selectedRole,
-                            hint: const Text(
-                              'طالبة / أستاذة',
-                              style: TextStyle(color: iconGrey),
-                            ),
-                            decoration: _buildInputDecoration(
-                              icon: Icons.keyboard_arrow_down_outlined,
-                              isDropdown: true,
-                            ),
-                            items: _roles.map((UserRole role) {
-                              return DropdownMenuItem<UserRole>(
-                                value: role,
-                                child: Text(getRoleNameInArabic(role)),
-                              );
-                            }).toList(),
-
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedRole = newValue;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'الرجاء اختيار دورك';
-                              }
-                              return null;
-                            },
-                          ),
                           const SizedBox(height: 32),
 
                           // 9. Signup Button
