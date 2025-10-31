@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/core/models/notifications_model.dart';
 import 'package:ramla_school/core/models/subject_model.dart';
@@ -139,6 +142,23 @@ extension SubjectExtension on SchoolSubject {
     }
   }
 }
+
+// ------------------- SUBJECT COLOR MAP -------------------
+
+final Map<SchoolSubject, Color> subjectColors = {
+  SchoolSubject.math: Colors.blue.shade100,
+  SchoolSubject.science: Colors.green.shade100,
+  SchoolSubject.fitness: Colors.orange.shade100,
+  SchoolSubject.music: Colors.purple.shade100,
+  SchoolSubject.islamic: Colors.teal.shade100,
+  SchoolSubject.computer: Colors.indigo.shade100,
+  SchoolSubject.geography: Colors.brown.shade100,
+  SchoolSubject.english: Colors.red.shade100,
+  SchoolSubject.arabic: Colors.pink.shade100,
+  SchoolSubject.houseEconomics: Colors.cyan.shade100,
+  SchoolSubject.practicalStudies: Colors.amber.shade100,
+  SchoolSubject.art: Colors.lime.shade100,
+};
 
 UserRole? currentRole;
 

@@ -19,9 +19,6 @@ class Home extends StatelessWidget {
   static const Color secondaryText = Color(0xFF666666);
   static const Color accentOrange = Color(0xFFF39C12);
 
-  // Example: Current logged-in user role (you can replace with real role later)
-  final UserRole currentRole = UserRole.admin;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,16 +77,7 @@ class Home extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
-        // Display correct modal based on role
-        if (currentRole == UserRole.admin) {
-          return _adminAddNewsSheet(context);
-        } else if (currentRole == UserRole.teacher) {
-          return _teacherAddNewsSheet(context);
-        } else {
-          return _studentAddNewsSheet(context);
-        }
-      },
+      builder: (context) => _adminAddNewsSheet(context),
     );
   }
 
@@ -184,28 +172,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // 🧩 Teacher modal
-  Widget _teacherAddNewsSheet(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Text(
-        "المعلمين لا يمكنهم إضافة الأخبار حالياً.",
-        style: TextStyle(fontSize: 16, color: secondaryText),
-      ),
-    );
-  }
-
-  // 🧩 Student modal
-  Widget _studentAddNewsSheet(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Text(
-        "الطلاب لا يمكنهم إضافة الأخبار.",
-        style: TextStyle(fontSize: 16, color: secondaryText),
-      ),
-    );
-  }
-
   // --- APP BAR ---
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return AppBar(
@@ -226,17 +192,47 @@ class Home extends StatelessWidget {
                     onTap: () {
                       _showProfilePopup(
                         context,
-                        AdminModel(
-                          id: "AD-001",
-                          firstName: "كريم",
-                          lastName: "ايهاب",
-                          email: "admin@ramla.com",
-                          imageUrl:
-                              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                          status: UserStatus.online,
-                          gender: Gender.male,
-                          createdAt: DateTime.now(),
-                        ),
+                        currentRole == UserRole.admin
+                            ? AdminModel(
+                                id: "AD-001",
+                                firstName: "كريم",
+                                lastName: "ايهاب",
+                                email: "admin@ramla.com",
+                                imageUrl:
+                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                status: UserStatus.online,
+                                gender: Gender.male,
+                                createdAt: DateTime.now(),
+                              )
+                            : currentRole == UserRole.teacher
+                            ? TeacherModel(
+                                id: "T-001",
+                                firstName: "أ. سارة",
+                                lastName: "علاء",
+                                email: "sara@example.com",
+                                imageUrl:
+                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                status: UserStatus.online,
+                                gender: Gender.female,
+                                createdAt: DateTime.now(),
+                                subjects: [
+                                  SchoolSubject.computer,
+                                  SchoolSubject.science,
+                                ],
+                              )
+                            : StudentModel(
+                                id: "ST-001",
+                                firstName: "ندى",
+                                lastName: "محمد",
+                                email: "nada@example.com",
+                                imageUrl:
+                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                status: UserStatus.online,
+                                gender: Gender.female,
+                                createdAt: DateTime.now(),
+                                grade: 6,
+                                classNumber: 2,
+                              ),
                       );
                     },
                     child: CircleAvatar(
@@ -250,9 +246,10 @@ class Home extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
-                      Text('مرحباً',
-                          style:
-                              TextStyle(color: secondaryText, fontSize: 14)),
+                      Text(
+                        'مرحباً',
+                        style: TextStyle(color: secondaryText, fontSize: 14),
+                      ),
                       Text(
                         'كريم ايهاب',
                         overflow: TextOverflow.ellipsis,
@@ -302,8 +299,11 @@ class Home extends StatelessWidget {
   }
 
   // --- Shared Widgets ---
-  Widget _buildSectionHeader(BuildContext context,
-      {required String title, required VoidCallback onTapSeeAll}) {
+  Widget _buildSectionHeader(
+    BuildContext context, {
+    required String title,
+    required VoidCallback onTapSeeAll,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -336,10 +336,13 @@ class Home extends StatelessWidget {
       context: context,
       builder: (context) {
         return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 40,
+          ),
           backgroundColor: Colors.transparent,
           child: Container(
             padding: const EdgeInsets.all(20),
@@ -354,63 +357,287 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 45,
-                  backgroundImage: user.imageUrl.isNotEmpty
-                      ? NetworkImage(user.imageUrl)
-                      : const AssetImage('assets/images/boys-profile.png')
-                          as ImageProvider,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  user.fullName,
-                  style: const TextStyle(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // الصورة الشخصية
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Home.primaryGreen, width: 2),
+                    ),
+                    child: CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: user.imageUrl.isNotEmpty
+                          ? NetworkImage(user.imageUrl)
+                          : const AssetImage('assets/images/boys-profile.png')
+                                as ImageProvider,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // الاسم الكامل
+                  Text(
+                    user.fullName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: primaryText),
-                ),
-                const SizedBox(height: 4),
-                Text(user.email,
-                    style: const TextStyle(
-                        fontSize: 14, color: secondaryText)),
-                const SizedBox(height: 20),
-                _buildInfoRow('الدور', _translateRole(user.role)),
-                const SizedBox(height: 12),
-                _buildInfoRow(
-                  'الحالة',
-                  user.status == UserStatus.online ? 'متصل' : 'غير متصل',
-                  valueColor:
-                      user.status == UserStatus.online ? Colors.green : Colors.grey,
-                ),
-                const SizedBox(height: 20),
-                OutlinedButton(
-                  onPressed: () => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Login()),
-                    (context) => false,
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: primaryRed, width: 1.8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      color: Home.primaryText,
                     ),
-                    foregroundColor: primaryRed,
                   ),
-                  child: const Text(
-                    'تسجيل الخروج',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+
+                  const SizedBox(height: 4),
+
+                  // البريد الإلكتروني
+                  Text(
+                    user.email,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Home.secondaryText,
+                    ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 20),
+
+                  // بطاقة المعلومات العامة
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildRoleSpecificInfo(user),
+                        const SizedBox(height: 12),
+                        _buildInfoRow('الدور', _translateRole(user.role)),
+                        const SizedBox(height: 8),
+                        _buildInfoRow(
+                          'الحالة',
+                          user.status == UserStatus.online
+                              ? 'متصل'
+                              : 'غير متصل',
+                          valueColor: user.status == UserStatus.online
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // زر تسجيل الخروج
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Login()),
+                        (context) => false,
+                      ),
+                      style:
+                          OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(
+                              color: Home.primaryRed,
+                              width: 1.8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            foregroundColor: Home.primaryRed,
+                            backgroundColor: Colors.transparent,
+                          ).copyWith(
+                            overlayColor: MaterialStateProperty.all(
+                              Home.primaryRed.withOpacity(0.1),
+                            ),
+                          ),
+
+                      child: const Text(
+                        'تسجيل الخروج',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // زر الإغلاق
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: Colors.grey.shade200,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text(
+                        'إغلاق',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Home.primaryGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  // عرض بيانات خاصة حسب نوع المستخدم
+  Widget _buildRoleSpecificInfo(UserModel user) {
+    if (user.role == UserRole.student && user is StudentModel) {
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'الصف:',
+                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+              ),
+              Text(
+                '${user.grade}',
+                style: const TextStyle(
+                  color: Home.primaryText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'الفصل:',
+                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+              ),
+              Text(
+                '${user.classNumber}',
+                style: const TextStyle(
+                  color: Home.primaryText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    } else if (user.role == UserRole.teacher && user is TeacherModel) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // العنوان وعدد المواد
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'عدد المواد:',
+                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+              ),
+              Text(
+                '${user.subjects.isNotEmpty ? user.subjects.length : 0}',
+                style: const TextStyle(
+                  color: Home.primaryText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // عرض قائمة المواد
+          if (user.subjects.isNotEmpty)
+            SizedBox(
+              height: 60,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: user.subjects.length,
+                itemBuilder: (context, index) {
+                  final subject = user.subjects[index];
+
+                  return Container(
+                    margin: EdgeInsets.only(right: index == 0 ? 0 : 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ), // 👈 padding بدل width ثابت
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Home.primaryText.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min, // 👈 يخلي العرض على قد المحتوى
+                      children: [
+                        const Icon(
+                          Icons.book,
+                          color: Home.primaryText,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          subject.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Home.primaryText,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            const Text(
+              'لا توجد مواد مضافة بعد.',
+              style: TextStyle(color: Home.secondaryText, fontSize: 14),
+            ),
+        ],
+      );
+    } else if (user.role == UserRole.admin && user is AdminModel) {
+      return const Center(
+        child: Text(
+          'مدير النظام',
+          style: TextStyle(
+            color: Home.primaryText,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   // --- Utilities ---
@@ -429,8 +656,7 @@ class Home extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: const TextStyle(color: secondaryText, fontSize: 15)),
+        Text(label, style: const TextStyle(color: secondaryText, fontSize: 15)),
         Text(
           value,
           style: TextStyle(
