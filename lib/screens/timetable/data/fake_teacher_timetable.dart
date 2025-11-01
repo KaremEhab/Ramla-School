@@ -94,8 +94,9 @@ class MockTeacherTimetableService {
 
           // تخطي الجمعة والسبت
           if (date.weekday == DateTime.friday ||
-              date.weekday == DateTime.saturday)
+              date.weekday == DateTime.saturday) {
             continue;
+          }
 
           final lessons = _generateDailyLessons(teacher, date);
 

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ramla_school/core/models/timetable_model.dart';
-import 'package:ramla_school/core/app/constants.dart';
 
 part 'student_time_table_state.dart';
 

@@ -194,7 +194,7 @@ class _SignupState extends State<Signup> {
 
                               // Role Dropdown
                               DropdownButtonFormField<UserRole>(
-                                value: _selectedRole,
+                                initialValue: _selectedRole,
                                 hint: const Text(
                                   'طالبة / أستاذة',
                                   style: TextStyle(color: iconGrey),
@@ -401,8 +401,9 @@ class _SignupState extends State<Signup> {
         isDropdown: isDropdown,
       ),
       validator: (value) {
-        if (validatorMsg != null && (value == null || value.isEmpty))
+        if (validatorMsg != null && (value == null || value.isEmpty)) {
           return validatorMsg;
+        }
         if (extraValidator != null) return extraValidator(value);
         return null;
       },
@@ -455,8 +456,9 @@ class _SignupState extends State<Signup> {
   Widget _buildSubjectsSelector() {
     return FormField<List<SchoolSubject>>(
       validator: (value) {
-        if (_selectedSubjects.isEmpty)
+        if (_selectedSubjects.isEmpty) {
           return 'الرجاء اختيار مادة واحدة على الأقل';
+        }
         return null;
       },
       builder: (formFieldState) {
@@ -566,7 +568,7 @@ class _SignupState extends State<Signup> {
   Widget _buildSingleGradeSelector() {
     // Single grade for students
     return DropdownButtonFormField<Grade>(
-      value: _selectedGrade,
+      initialValue: _selectedGrade,
       decoration: _buildInputDecoration(
         hint: 'الصف الدراسي',
         icon: Icons.numbers,
@@ -644,8 +646,9 @@ class _SignupState extends State<Signup> {
                             onChanged: (selected) {
                               setStateDialog(() {
                                 if (selected == true) {
-                                  if (tempSelected.length < 2)
+                                  if (tempSelected.length < 2) {
                                     tempSelected.add(subject);
+                                  }
                                 } else {
                                   tempSelected.remove(subject);
                                 }
@@ -727,8 +730,9 @@ class _SignupState extends State<Signup> {
                       onChanged: (checked) {
                         setModalState(() {
                           if (checked == true) {
-                            if (_selectedGrades.length < 2)
+                            if (_selectedGrades.length < 2) {
                               _selectedGrades.add(grade);
+                            }
                           } else {
                             _selectedGrades.remove(grade);
                           }
@@ -736,7 +740,7 @@ class _SignupState extends State<Signup> {
                         setState(() {});
                       },
                     );
-                  }).toList(),
+                  }),
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),

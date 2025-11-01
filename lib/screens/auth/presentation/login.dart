@@ -9,7 +9,6 @@ import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/core/utils.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/presentation/signup.dart';
-import 'package:ramla_school/screens/home/presentation/home.dart';
 import 'package:ramla_school/screens/layout.dart';
 
 class Login extends StatefulWidget {

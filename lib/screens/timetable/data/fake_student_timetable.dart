@@ -116,8 +116,9 @@ class MockTimetableService {
 
           // Skip Fridays and Saturdays
           if (date.weekday == DateTime.friday ||
-              date.weekday == DateTime.saturday)
+              date.weekday == DateTime.saturday) {
             continue;
+          }
 
           all.add(
             TimetableModel(

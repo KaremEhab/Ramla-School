@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:ramla_school/core/app/constants.dart'; // Assuming NewsModel is here or imported via constants
+// Assuming NewsModel is here or imported via constants
 import 'package:ramla_school/core/models/news_model.dart'; // Direct import if preferred
 
 class NewsDetailsScreen extends StatelessWidget {

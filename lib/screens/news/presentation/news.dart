@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ramla_school/core/app/constants.dart';
-import 'package:ramla_school/core/models/notifications_model.dart';
 import 'package:ramla_school/core/widgets.dart';
 
 class AllNews extends StatelessWidget {

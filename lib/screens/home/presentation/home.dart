@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ramla_school/core/app/constants.dart';
-import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/core/models/users/admin_model.dart';
 import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:ramla_school/core/widgets.dart';
-import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/presentation/login.dart';
 import 'package:ramla_school/screens/news/presentation/news.dart';
@@ -424,7 +422,7 @@ class Home extends StatelessWidget {
                               foregroundColor: Home.primaryRed,
                               backgroundColor: Colors.transparent,
                             ).copyWith(
-                              overlayColor: MaterialStateProperty.all(
+                              overlayColor: WidgetStateProperty.all(
                                 Home.primaryRed.withOpacity(0.1),
                               ),
                             ),

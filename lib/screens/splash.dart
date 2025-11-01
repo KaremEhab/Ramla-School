@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/screens/auth/presentation/login.dart';
 import 'package:ramla_school/screens/layout.dart';

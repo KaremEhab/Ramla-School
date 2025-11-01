@@ -446,7 +446,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                       vertical: 8,
                     ),
                   ),
-                  value: _selectedYear,
+                  initialValue: _selectedYear,
                   items: _availableYears
                       .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
                       .toList(),
@@ -475,7 +475,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                       vertical: 8,
                     ),
                   ),
-                  value: _selectedMonth,
+                  initialValue: _selectedMonth,
                   items: _availableMonths
                       .map((m) => DropdownMenuItem(value: m, child: Text('$m')))
                       .toList(),
@@ -503,7 +503,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                       vertical: 8,
                     ),
                   ),
-                  value: _selectedDay,
+                  initialValue: _selectedDay,
                   items: _availableDays
                       .map((d) => DropdownMenuItem(value: d, child: Text('$d')))
                       .toList(),
@@ -984,9 +984,9 @@ class _AddDaySheetState extends State<_AddDaySheet> {
     final canAddLesson = lessonsCount < 7;
     bool canAddBreak = false;
 
-    if (breaksCount == 0 && lessonsCount >= 2 && lessonsCount <= 4)
+    if (breaksCount == 0 && lessonsCount >= 2 && lessonsCount <= 4) {
       canAddBreak = true;
-    else if (breaksCount == 1 && lessonsCount >= 5 && lessonsCount < 6)
+    } else if (breaksCount == 1 && lessonsCount >= 5 && lessonsCount < 6)
       canAddBreak = true;
     if (_lessons.isNotEmpty && _lessons.last.isBreak) canAddBreak = false;
 
@@ -1041,7 +1041,7 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                       vertical: 8,
                     ),
                   ),
-                  value: _grade,
+                  initialValue: _grade,
                   items: Grade.values
                       .map(
                         (g) => DropdownMenuItem(value: g, child: Text(g.label)),
@@ -1111,8 +1111,9 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                       selectedGrade: _grade,
                       onUpdate: (updatedLesson) {
                         final index = _lessons.indexOf(lesson);
-                        if (index != -1)
+                        if (index != -1) {
                           setState(() => _lessons[index] = updatedLesson);
+                        }
                       },
                       onRemove: () => setState(() => _lessons.remove(lesson)),
                     ),
@@ -1292,7 +1293,7 @@ class _LessonCardState extends State<_LessonCard> {
                           vertical: 8,
                         ),
                       ),
-                      value: widget.lesson.subject,
+                      initialValue: widget.lesson.subject,
                       items: widget.subjects
                           .map(
                             (s) =>
@@ -1333,7 +1334,7 @@ class _LessonCardState extends State<_LessonCard> {
                           vertical: 8,
                         ),
                       ),
-                      value: _teacher,
+                      initialValue: _teacher,
                       items: _filteredTeachers
                           .map(
                             (t) => DropdownMenuItem(
@@ -1544,7 +1545,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
                   vertical: 8,
                 ),
               ),
-              value: _subject,
+              initialValue: _subject,
               items: widget.allSubjects
                   .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
                   .toList(),
@@ -1580,7 +1581,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
                   vertical: 8,
                 ),
               ),
-              value: _teacher,
+              initialValue: _teacher,
               items: _filteredTeachers
                   .map(
                     (t) => DropdownMenuItem(

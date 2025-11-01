@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 // --- Add imports for your models ---
 // Assuming these paths are correct relative to your project structure
 import 'package:ramla_school/core/models/users/teacher_model.dart';
-import 'package:ramla_school/core/models/lesson_model.dart'; // Import REAL LessonModel
+// Import REAL LessonModel
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/chats/presentation/chat_details.dart'; // For UserStatus, Gender, Grade, SchoolSubject enums
 
@@ -435,7 +434,7 @@ class _TeacherListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // Determine the subject string using the SchoolSubject enum extension
     String subjectDisplay =
-        teacher.subjects.isNotEmpty && teacher.subjects.first.name != null
+        teacher.subjects.isNotEmpty
         ? 'معلمة ${teacher.subjects.first.name}' // Access name via extension
         : 'معلمة'; // Fallback if no subjects listed or subject is null
 

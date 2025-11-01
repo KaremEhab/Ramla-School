@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ramla_school/core/app/constants.dart';
-import 'package:ramla_school/core/models/subject_model.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 
 class TeacherModel extends UserModel {

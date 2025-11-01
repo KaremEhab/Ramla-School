@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/document_model.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class Documents extends StatefulWidget {
@@ -264,7 +263,7 @@ class _DocumentsState extends State<Documents> {
                   const SizedBox(height: 12),
 
                   DropdownButtonFormField<SchoolSubject>(
-                    value: selectedSubject,
+                    initialValue: selectedSubject,
                     items: availableSubjects.map((subject) {
                       return DropdownMenuItem(
                         value: subject,

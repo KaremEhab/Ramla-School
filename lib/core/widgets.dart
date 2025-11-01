@@ -1,7 +1,6 @@
 // News Card Widget
 import 'package:flutter/material.dart';
 import 'package:ramla_school/core/models/news_model.dart';
-import 'package:ramla_school/screens/news/presentation/news.dart';
 import 'package:ramla_school/screens/news/presentation/news_details.dart';
 
 class NewsCardWidget extends StatelessWidget {

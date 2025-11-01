@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/document_model.dart';
 import 'package:ramla_school/core/models/lesson_model.dart';
-import 'package:ramla_school/core/models/timetable_model.dart';
 import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/screens/documents/presentation/documents.dart';
 import 'package:ramla_school/screens/timetable/data/student/student_time_table_cubit.dart';
@@ -107,8 +106,9 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   void _scrollToSelectedDay() {
-    if (!_dayScrollController.hasClients || _daysForCurrentMonth.isEmpty)
+    if (!_dayScrollController.hasClients || _daysForCurrentMonth.isEmpty) {
       return;
+    }
 
     int index = _daysForCurrentMonth.indexWhere(
       (d) => DateUtils.isSameDay(d.date, _selectedDate),

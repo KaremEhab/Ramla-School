@@ -5,7 +5,6 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/admin_model.dart';
 import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
-import 'package:ramla_school/core/models/users/user_model.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -151,7 +150,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                       valueListenable: gender,
                       builder: (context, g, _) {
                         return DropdownButtonFormField<Gender>(
-                          value: g,
+                          initialValue: g,
                           decoration: const InputDecoration(
                             labelText: 'النوع',
                             border: OutlineInputBorder(),
