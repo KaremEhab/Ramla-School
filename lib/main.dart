@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
+import 'package:ramla_school/core/services/bloc_observer.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/screens/analytics/data/admin_analytics_cubit.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
@@ -23,6 +24,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('ar');
+  Bloc.observer = MyBlocObserver();
   await CacheHelper.init();
 
   // Load cached user and role before running the app

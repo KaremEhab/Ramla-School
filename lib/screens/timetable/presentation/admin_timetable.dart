@@ -51,20 +51,10 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
         .collection('timetables')
         .get();
 
-    log('--- FETCHING ALL TIMETABLES START ---');
-
     final timetables = snapshot.docs.map((doc) {
-      log('Document ID: ${doc.id}');
-      log(
-        'Raw Firestore Data: ${doc.data()}',
-      ); // Inspect this log for data issues!
       // Use the safe spread operator for mapping
       return TimetableModel.fromMap({...doc.data() ?? {}, 'id': doc.id});
     }).toList();
-
-    log(
-      '--- FETCHING ALL TIMETABLES END. Found ${timetables.length} documents. ---',
-    );
 
     setState(() => _timetables = timetables);
   }
@@ -655,23 +645,6 @@ class _EditTimetableSheetState extends State<_EditTimetableSheet> {
     super.initState();
     // Create a mutable copy of the list
     _lessons = List.from(widget.timetable.lessons);
-
-    // --- LOGGING IS CORRECT ---
-    log('--- START: _EditTimetableSheet Lessons Data ---');
-    log('Timetable ID: ${widget.timetable.id}');
-    for (var lesson in _lessons) {
-      log('Lesson ID: ${lesson.id}');
-      log(
-        '  Time: ${DateFormat('HH:mm').format(lesson.startTime.toDate())} - ${DateFormat('HH:mm').format(lesson.endTime.toDate())}',
-      );
-      log('  Subject: ${lesson.subject?.name ?? 'BREAK'}');
-      // Assuming TeacherModel has a sensible toString() or we can print a key property
-      log(
-        '  Teacher: ${lesson.teacher?.fullName ?? 'None'} (ID: ${lesson.teacher?.id})',
-      );
-    }
-    log('--- END: _EditTimetableSheet Lessons Data ---');
-    // --- LOGGING IS CORRECT ---
   }
 
   /// Updates a lesson in the local _lessons list
