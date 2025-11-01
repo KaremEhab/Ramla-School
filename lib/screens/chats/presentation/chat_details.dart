@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'dart:io'; // For File type
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Import image_picker
 import 'package:file_picker/file_picker.dart'; // Import file_picker
 import 'package:intl/intl.dart'; // Import intl
+import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/screens/documents/presentation/documents.dart'; // For UserStatus and potentially TeacherModel/StudentModel later
 // import 'package:ramla_school/core/models/users/teacher_model.dart'; // Import if needed for recipient info
 
@@ -112,16 +114,6 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     ), // Example file
   ];
 
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color myMessageBg = primaryGreen;
-  static const Color otherMessageBg = Color(0xFFF0F0F0);
-  static const Color inputBg = Color(0xFFF9F9F9);
-  static const Color onlineIndicator = Colors.green;
-  static Color dividerColor = Colors.grey.shade200; // Define dividerColor
-
   @override
   void dispose() {
     _messageController.dispose();
@@ -194,7 +186,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         maxWidth: 1000, // Optional: Resize image
       );
       if (pickedFile != null) {
-        print('Image picked: ${pickedFile.path}');
+        log('Image picked: ${pickedFile.path}');
         // For now, add a placeholder message with the local path (for display)
         // In real app, upload first, then add message with download URL
         _sendFileMessage(
@@ -203,7 +195,8 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         ); // Use local path as temp URL
       }
     } catch (e) {
-      print('Error picking image: $e');
+      log('Error picking image: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('حدث خطأ أثناء اختيار الصورة: $e')),
       );
@@ -220,16 +213,17 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
 
       if (result != null && result.files.single.path != null) {
         String filePath = result.files.single.path!;
-        print('File picked: $filePath');
+        log('File picked: $filePath');
         // For now, add a placeholder message with the local path
         // In real app, upload first, then add message with download URL/file info
         _sendFileMessage(filePath);
       } else {
         // User canceled the picker
-        print('File picking cancelled.');
+        log('File picking cancelled.');
       }
     } catch (e) {
-      print('Error picking file: $e');
+      log('Error picking file: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('حدث خطأ أثناء اختيار الملف: $e')));
@@ -240,7 +234,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       builder: (context) {
         return SafeArea(
           child: Wrap(
@@ -252,7 +246,6 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 ),
                 title: const Text(
                   'المعرض',
-                  style: TextStyle(fontFamily: 'Tajawal'),
                 ),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
@@ -266,7 +259,6 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 ),
                 title: const Text(
                   'الكاميرا',
-                  style: TextStyle(fontFamily: 'Tajawal'),
                 ),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
@@ -280,7 +272,6 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 ),
                 title: const Text(
                   'مستند',
-                  style: TextStyle(fontFamily: 'Tajawal'),
                 ),
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
@@ -297,10 +288,10 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         forceMaterialTransparency: true,
@@ -315,9 +306,9 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             CircleAvatar(
               radius: 20,
               backgroundImage: NetworkImage(widget.recipientAvatarUrl),
-              backgroundColor: Colors.grey[200],
+              backgroundColor: iconGrey,
               onBackgroundImageError: (exception, stackTrace) {
-                print('Error loading recipient avatar: $exception');
+                log('Error loading recipient avatar: $exception');
               },
             ),
             const SizedBox(width: 12),
@@ -390,12 +381,12 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: screenBg,
         border: Border(top: BorderSide(color: dividerColor)),
         boxShadow: [
           // Subtle shadow for input area
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: iconGrey.withAlpha((0.08 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -454,7 +445,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
+                foregroundColor: screenBg,
                 padding: const EdgeInsets.all(12),
               ),
               icon: const Icon(Icons.send_outlined, size: 20),
@@ -479,12 +470,8 @@ class _MessageBubble extends StatelessWidget {
     final alignment = isMyMessage
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
-    final color = isMyMessage
-        ? _ChatDetailsScreenState.myMessageBg
-        : _ChatDetailsScreenState.otherMessageBg;
-    final textColor = isMyMessage
-        ? Colors.white
-        : _ChatDetailsScreenState.primaryText;
+    final color = isMyMessage ? myMessageBg : otherMessageBg;
+    final textColor = isMyMessage ? screenBg : primaryText;
     final borderRadius = BorderRadius.only(
       topLeft: const Radius.circular(20),
       topRight: const Radius.circular(20),
@@ -557,13 +544,13 @@ class _MessageBubble extends StatelessWidget {
                                       padding: EdgeInsets.all(16.0),
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.white,
+                                        color: screenBg,
                                       ),
                                     ),
                               errorBuilder: (context, error, stack) =>
                                   const Icon(
                                     Icons.broken_image,
-                                    color: Colors.white70,
+                                    color: iconGrey,
                                     size: 40,
                                   ),
                             ),
@@ -580,13 +567,13 @@ class _MessageBubble extends StatelessWidget {
                     child: Container(
                       height: 150, // Example height
                       decoration: BoxDecoration(
-                        color: Colors.black54,
+                        color: primaryText,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.play_circle_fill,
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withAlpha((0.8 * 255).round()),
                         size: 40,
                       ),
                     ),
@@ -610,7 +597,7 @@ class _MessageBubble extends StatelessWidget {
                             ),
                           ),
                         );
-                        print("Attempting to open file: ${message.filePath}");
+                        log("Attempting to open file: ${message.filePath}");
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -619,8 +606,8 @@ class _MessageBubble extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isMyMessage
-                              ? Colors.white.withOpacity(0.2)
-                              : Colors.grey.shade300,
+                              ? screenBg.withAlpha((0.2 * 255).round())
+                              : iconGrey,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -687,10 +674,7 @@ class _MessageBubble extends StatelessWidget {
                 'h:mm a',
                 'ar',
               ).format(message.timestamp), // Format time e.g., ٩:٣٠ ص
-              style: const TextStyle(
-                color: _ChatDetailsScreenState.secondaryText,
-                fontSize: 10,
-              ),
+              style: const TextStyle(color: secondaryText, fontSize: 10),
             ),
           ),
         ],

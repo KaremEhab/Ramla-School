@@ -5,21 +5,13 @@ import 'package:ramla_school/core/widgets.dart';
 class AllNews extends StatelessWidget {
   const AllNews({super.key});
 
-  // --- Colors (Sampled from image) ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color newNotificationBg = Color(
-    0xFFD7F5E2,
-  ); // Light green background
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0, // No shadow
         scrolledUnderElevation: 0, // No shadow when scrolling
         // --- End Shadowless AppBar ---

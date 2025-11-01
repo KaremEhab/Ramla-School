@@ -1,4 +1,6 @@
 // Custom Clipper for the top-right green shape
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:ramla_school/core/app/constants.dart';
 
@@ -40,7 +42,7 @@ class GradeHelper {
     try {
       return Grade.values.firstWhere((e) => e.name == gradeString);
     } catch (e) {
-      print("Error parsing grade: $gradeString. Defaulting to grade9.");
+      log("Error parsing grade: $gradeString. Defaulting to grade9.");
       return Grade.grade9; // Fallback
     }
   }

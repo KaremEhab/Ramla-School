@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:ramla_school/core/app/constants.dart';
 
 // Simple model for FAQ data
 class FaqItem {
@@ -49,15 +52,6 @@ class _FaqsScreenState extends State<FaqsScreen> {
   // --- Controller for the new question field ---
   final _newQuestionController = TextEditingController();
 
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color iconGrey = Color(0xFFAAAAAA);
-  static const Color dividerColor = Color(0xFFEEEEEE);
-  static const Color textFieldFill = Color(0xFFF9F9F9);
-
-
   @override
   void dispose() {
     _newQuestionController.dispose();
@@ -67,10 +61,10 @@ class _FaqsScreenState extends State<FaqsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false, // disables the back button
@@ -91,17 +85,17 @@ class _FaqsScreenState extends State<FaqsScreen> {
           // 1. List of FAQs
           Expanded(
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 20.0,
+              ),
               itemCount: _faqs.length,
               itemBuilder: (context, index) {
                 final faq = _faqs[index];
                 return _FaqTile(faq: faq);
               },
-              separatorBuilder: (context, index) => const Divider(
-                color: dividerColor,
-                height: 1,
-                thickness: 1,
-              ),
+              separatorBuilder: (context, index) =>
+                  const Divider(color: dividerColor, height: 1, thickness: 1),
             ),
           ),
 
@@ -116,11 +110,11 @@ class _FaqsScreenState extends State<FaqsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: screenBg,
         border: const Border(top: BorderSide(color: dividerColor)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: iconGrey.withAlpha((0.1 * 255).round()),
             spreadRadius: 0,
             blurRadius: 10,
             offset: const Offset(0, -2), // Shadow upwards
@@ -155,7 +149,10 @@ class _FaqsScreenState extends State<FaqsScreen> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
@@ -163,11 +160,11 @@ class _FaqsScreenState extends State<FaqsScreen> {
               IconButton(
                 style: IconButton.styleFrom(
                   backgroundColor: primaryGreen,
-                  foregroundColor: Colors.white,
+                  foregroundColor: screenBg,
                   padding: const EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)
-                  )
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: const Icon(Icons.send_outlined),
                 onPressed: _sendQuestion,
@@ -183,7 +180,7 @@ class _FaqsScreenState extends State<FaqsScreen> {
     final question = _newQuestionController.text.trim();
     if (question.isNotEmpty) {
       // TODO: Implement sending logic (e.g., save to Firestore, show confirmation)
-      print('Sending question: $question');
+      log('Sending question: $question');
       _newQuestionController.clear();
       // Show a confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -193,15 +190,15 @@ class _FaqsScreenState extends State<FaqsScreen> {
         ),
       );
     } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('الرجاء كتابة سؤال قبل الإرسال'),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: offlineIndicator,
         ),
       );
     }
-     // Hide keyboard
-     FocusScope.of(context).unfocus();
+    // Hide keyboard
+    FocusScope.of(context).unfocus();
   }
 }
 
@@ -216,17 +213,20 @@ class _FaqTile extends StatelessWidget {
     return ExpansionTile(
       // Customize expansion tile appearance
       tilePadding: const EdgeInsets.symmetric(vertical: 8.0),
-      childrenPadding: const EdgeInsets.only(bottom: 16.0, right: 16.0, left: 16.0),
-      iconColor: _FaqsScreenState.primaryGreen,
-      collapsedIconColor: _FaqsScreenState.iconGrey,
+      childrenPadding: const EdgeInsets.only(
+        bottom: 16.0,
+        right: 16.0,
+        left: 16.0,
+      ),
+      iconColor: primaryGreen,
+      collapsedIconColor: iconGrey,
       shape: const Border(), // Remove default border
       collapsedShape: const Border(), // Remove default border when collapsed
-
 
       title: Text(
         faq.question,
         style: const TextStyle(
-          color: _FaqsScreenState.primaryText,
+          color: primaryText,
           fontWeight: FontWeight.w600, // Slightly bolder than answer
           fontSize: 16,
         ),
@@ -235,7 +235,7 @@ class _FaqTile extends StatelessWidget {
         Text(
           faq.answer,
           style: const TextStyle(
-            color: _FaqsScreenState.secondaryText,
+            color: secondaryText,
             fontSize: 14,
             height: 1.5, // Line spacing
           ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 // --- Add imports for your models ---
 // Assuming these paths are correct relative to your project structure
@@ -41,18 +43,6 @@ class _MessagesScreenState extends State<MessagesScreen>
     with SingleTickerProviderStateMixin {
   // Needed for TabController
   late TabController _tabController;
-
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color iconGrey = Color(0xFFAAAAAA);
-  static const Color dividerColor = Color(0xFFEEEEEE);
-  static const Color studentCardBg = Color(
-    0xFFFDECDA,
-  ); // Orange background for student card
-  static const Color onlineIndicator =
-      Colors.green; // Green dot for online status
 
   // --- Mock Data ---
   final List<ChatItem> _chats = [
@@ -160,10 +150,10 @@ class _MessagesScreenState extends State<MessagesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         forceMaterialTransparency: true,
@@ -186,12 +176,10 @@ class _MessagesScreenState extends State<MessagesScreen>
           indicatorColor: primaryGreen, // Color of the underline indicator
           indicatorWeight: 3.0,
           labelStyle: const TextStyle(
-            fontFamily: 'Tajawal',
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
           unselectedLabelStyle: const TextStyle(
-            fontFamily: 'Tajawal',
             fontWeight: FontWeight.normal,
             fontSize: 16,
           ),
@@ -220,13 +208,6 @@ class _MyMessagesTab extends StatelessWidget {
   final List<ChatItem> chats;
   const _MyMessagesTab({required this.chats});
 
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color onlineIndicator =
-      Colors.green; // Green dot for online status
-
   @override
   Widget build(BuildContext context) {
     if (chats.isEmpty) {
@@ -241,7 +222,7 @@ class _MyMessagesTab extends StatelessWidget {
       },
       separatorBuilder: (context, index) => const Divider(
         height: 24,
-        color: _MessagesScreenState.dividerColor,
+        color: dividerColor,
         indent: 70, // Indent to align after avatar
       ),
     );
@@ -253,13 +234,6 @@ class _ClassTeachersTab extends StatelessWidget {
   // --- Updated parameter type ---
   final List<TeacherModel> teachers;
   const _ClassTeachersTab({required this.teachers});
-
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color onlineIndicator =
-      Colors.green; // Green dot for online status
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +250,7 @@ class _ClassTeachersTab extends StatelessWidget {
       },
       separatorBuilder: (context, index) => const Divider(
         height: 24,
-        color: _MessagesScreenState.dividerColor,
+        color: dividerColor,
         indent: 70, // Indent to align after avatar
       ),
     );
@@ -294,7 +268,7 @@ class _ChatListItem extends StatelessWidget {
     return InkWell(
       // Make it tappable
       onTap: () {
-        print('Tapped on chat with ${chat.name}');
+        log('Tapped on chat with ${chat.name}');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -318,7 +292,7 @@ class _ChatListItem extends StatelessWidget {
                 CircleAvatar(
                   radius: 28,
                   backgroundImage: NetworkImage(chat.avatarUrl),
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: screenBg,
                 ),
                 if (chat.isOnline)
                   Positioned(
@@ -328,9 +302,9 @@ class _ChatListItem extends StatelessWidget {
                       height: 14,
                       width: 14,
                       decoration: BoxDecoration(
-                        color: _MyMessagesTab.onlineIndicator,
+                        color: onlineIndicator,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: screenBg, width: 2),
                       ),
                     ),
                   ),
@@ -352,7 +326,7 @@ class _ChatListItem extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: _MyMessagesTab.primaryText,
+                            color: primaryText,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -363,7 +337,7 @@ class _ChatListItem extends StatelessWidget {
                         chat.timeAgo,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: _MyMessagesTab.secondaryText,
+                          color: secondaryText,
                         ),
                       ),
                     ],
@@ -380,8 +354,8 @@ class _ChatListItem extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             color: chat.unreadCount > 0
-                                ? _MyMessagesTab.primaryText
-                                : _MyMessagesTab.secondaryText,
+                                ? primaryText
+                                : secondaryText,
                             fontWeight: chat.unreadCount > 0
                                 ? FontWeight.bold
                                 : FontWeight.normal,
@@ -398,7 +372,7 @@ class _ChatListItem extends StatelessWidget {
                             vertical: 3,
                           ), // Adjusted padding
                           decoration: BoxDecoration(
-                            color: _MyMessagesTab.primaryGreen,
+                            color: primaryGreen,
                             borderRadius: BorderRadius.circular(
                               100,
                             ), // Make it rounder
@@ -406,7 +380,7 @@ class _ChatListItem extends StatelessWidget {
                           child: Text(
                             chat.unreadCount.toString(),
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: screenBg,
                               fontSize: 12, // Slightly smaller
                               fontWeight: FontWeight.bold,
                             ),
@@ -433,8 +407,7 @@ class _TeacherListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine the subject string using the SchoolSubject enum extension
-    String subjectDisplay =
-        teacher.subjects.isNotEmpty
+    String subjectDisplay = teacher.subjects.isNotEmpty
         ? 'معلمة ${teacher.subjects.first.name}' // Access name via extension
         : 'معلمة'; // Fallback if no subjects listed or subject is null
 
@@ -444,7 +417,7 @@ class _TeacherListItem extends StatelessWidget {
       // Make it tappable
       onTap: () {
         // TODO: Navigate to chat screen with this teacher.id (creating new if needed)
-        print('Tapped on teacher ${teacher.fullName}'); // Use fullName getter
+        log('Tapped on teacher ${teacher.fullName}'); // Use fullName getter
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -459,10 +432,10 @@ class _TeacherListItem extends StatelessWidget {
                   backgroundImage: NetworkImage(
                     teacher.imageUrl,
                   ), // Use imageUrl
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: screenBg,
                   // Basic error handling for image
                   onBackgroundImageError: (exception, stackTrace) {
-                    print('Error loading image: $exception');
+                    log('Error loading image: $exception');
                   },
                 ),
                 if (isOnline) // Check derived boolean
@@ -473,9 +446,9 @@ class _TeacherListItem extends StatelessWidget {
                       height: 14,
                       width: 14,
                       decoration: BoxDecoration(
-                        color: _ClassTeachersTab.onlineIndicator,
+                        color: onlineIndicator,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: screenBg, width: 2),
                       ),
                     ),
                   ),
@@ -492,7 +465,7 @@ class _TeacherListItem extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: _ClassTeachersTab.primaryText,
+                      color: primaryText,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -500,10 +473,7 @@ class _TeacherListItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subjectDisplay, // Use derived subject string
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: _ClassTeachersTab.secondaryText,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: secondaryText),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -513,13 +483,10 @@ class _TeacherListItem extends StatelessWidget {
             const SizedBox(width: 12),
             // Chat Icon Button
             IconButton(
-              icon: const Icon(
-                Icons.chat_bubble_outline,
-                color: _MessagesScreenState.primaryGreen,
-              ),
+              icon: const Icon(Icons.chat_bubble_outline, color: primaryGreen),
               onPressed: () {
                 // TODO: Navigate to chat screen with this teacher.id
-                print(
+                log(
                   'Start chat with ${teacher.fullName}',
                 ); // Use fullName getter
               },

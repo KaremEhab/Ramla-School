@@ -30,11 +30,11 @@ class _TimetableScreenState extends State<TimetableScreen> {
   Map<DateTime, DaySchedule> _allSchedules = {};
   late DateTime _selectedDate;
   late DateTime _currentDisplayMonth;
-  late int _firstLessonYear;
+  late int firstLessonYear;
 
   List<DaySchedule> _daysForCurrentMonth = [];
-  List<TimelineEntry> _selectedDayTimeline = [];
-  String _currentMonthString = '';
+  List<TimelineEntry> selectedDayTimeline = [];
+  String currentMonthString = '';
 
   late ScrollController _dayScrollController;
   late PageController _pageController;
@@ -46,7 +46,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
     _dayScrollController = ScrollController();
     _selectedDate = DateTime.now();
     _currentDisplayMonth = DateTime(_selectedDate.year, _selectedDate.month);
-    _firstLessonYear = _selectedDate.year;
+    firstLessonYear = _selectedDate.year;
     _pageController = PageController();
 
     final user = currentUser as StudentModel;
@@ -71,7 +71,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
     bool scrollToSelected = false,
   }) {
     setState(() {
-      _currentMonthString = DateFormat.MMMM('ar').format(_currentDisplayMonth);
+      currentMonthString = DateFormat.MMMM('ar').format(_currentDisplayMonth);
       _daysForCurrentMonth =
           _allSchedules.values
               .where(
@@ -94,7 +94,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
       }
 
       _selectedDate = DateUtils.dateOnly(targetDate);
-      _selectedDayTimeline =
+      selectedDayTimeline =
           _allSchedules[DateUtils.dateOnly(_selectedDate)]?.entries ?? [];
     });
 
@@ -151,7 +151,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
       if (_daysForCurrentMonth.isNotEmpty) {
         setState(() {
           _selectedDate = _daysForCurrentMonth.last.date;
-          _selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
+          selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
         });
         _pageController.jumpToPage(_daysForCurrentMonth.length - 1);
         _scrollToSelectedDay();
@@ -177,7 +177,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
       if (_daysForCurrentMonth.isNotEmpty) {
         setState(() {
           _selectedDate = _daysForCurrentMonth.first.date;
-          _selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
+          selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
         });
         _pageController.jumpToPage(0);
         _scrollToSelectedDay();
@@ -271,7 +271,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                     return LessonEntry(
                       subject: l.subject!.name,
                       teacher: l.teacher?.fullName ?? '',
-                      grade: t.grade.label ?? 'غير محدد',
+                      grade: t.grade.label,
                       classNumber: t.classNumber.toString(),
                       lessonIndex: t.lessons.indexOf(l) + 1,
                       duration: '${l.duration} دقيقة',
@@ -500,7 +500,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
     if (idx == -1) return;
     setState(() {
       _selectedDate = DateUtils.dateOnly(date);
-      _selectedDayTimeline =
+      selectedDayTimeline =
           _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
     });
     _pageController.jumpToPage(idx);
@@ -600,7 +600,7 @@ class _DayCard extends StatelessWidget {
               dayName,
               style: TextStyle(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.9)
+                    ? Colors.white.withAlpha((0.9 * 255).round())
                     : _TimetableScreenState.secondaryText,
                 fontSize: 14,
               ),

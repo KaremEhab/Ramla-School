@@ -14,16 +14,10 @@ import 'package:ramla_school/screens/notifications/presentation/notifications.da
 class Home extends StatelessWidget {
   const Home({super.key});
 
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryRed = Color(0xFFB05D5D);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color accentOrange = Color(0xFFF39C12);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: _buildCustomAppBar(context),
 
       // ✅ FAB appears only for Admins
@@ -31,7 +25,7 @@ class Home extends StatelessWidget {
           ? FloatingActionButton(
               backgroundColor: primaryGreen,
               onPressed: () => _showAddNewsModal(context),
-              child: const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add, color: screenBg),
             )
           : null,
 
@@ -102,7 +96,7 @@ class Home extends StatelessWidget {
               width: 60,
               height: 5,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: dividerColor,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -139,7 +133,7 @@ class Home extends StatelessWidget {
               label: const Text("رفع صورة"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
+                foregroundColor: screenBg,
               ),
             ),
             const SizedBox(height: 16),
@@ -154,7 +148,7 @@ class Home extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryGreen,
-                  foregroundColor: Colors.white,
+                  foregroundColor: screenBg,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -176,8 +170,10 @@ class Home extends StatelessWidget {
   // --- APP BAR ---
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       elevation: 0,
+      scrolledUnderElevation: 0,
+      forceMaterialTransparency: true,
       automaticallyImplyLeading: false,
       titleSpacing: 0,
       title: Padding(
@@ -232,7 +228,7 @@ class Home extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: primaryGreen.withOpacity(0.1),
+                    color: primaryGreen.withAlpha((0.1 * 255).round()),
                   ),
                   child: IconButton(
                     icon: const Icon(
@@ -308,10 +304,10 @@ class Home extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: Colors.white,
+              color: screenBg,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withAlpha((0.15 * 255).round()),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -326,11 +322,11 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Home.primaryGreen, width: 2),
+                      border: Border.all(color: primaryGreen, width: 2),
                     ),
                     child: CircleAvatar(
                       radius: 45,
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: screenBg,
                       backgroundImage: user.imageUrl.isNotEmpty
                           ? NetworkImage(user.imageUrl)
                           : const AssetImage('assets/images/boys-profile.png')
@@ -346,7 +342,7 @@ class Home extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Home.primaryText,
+                      color: primaryText,
                     ),
                   ),
 
@@ -356,10 +352,7 @@ class Home extends StatelessWidget {
                   Text(
                     user.email,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Home.secondaryText,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: secondaryText),
                   ),
 
                   const SizedBox(height: 20),
@@ -368,9 +361,9 @@ class Home extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: textFieldFill,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade200),
+                      border: Border.all(color: dividerColor),
                     ),
                     child: Column(
                       children: [
@@ -384,8 +377,8 @@ class Home extends StatelessWidget {
                               ? 'متصل'
                               : 'غير متصل',
                           valueColor: user.status == UserStatus.online
-                              ? Colors.green
-                              : Colors.grey,
+                              ? onlineIndicator
+                              : iconGrey,
                         ),
                       ],
                     ),
@@ -413,17 +406,17 @@ class Home extends StatelessWidget {
                             OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               side: BorderSide(
-                                color: Home.primaryRed,
+                                color: offlineIndicator,
                                 width: 1.8,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              foregroundColor: Home.primaryRed,
+                              foregroundColor: offlineIndicator,
                               backgroundColor: Colors.transparent,
                             ).copyWith(
                               overlayColor: WidgetStateProperty.all(
-                                Home.primaryRed.withOpacity(0.1),
+                                offlineIndicator.withAlpha((0.1 * 255).round()),
                               ),
                             ),
 
@@ -446,7 +439,7 @@ class Home extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: Colors.grey.shade200,
+                        backgroundColor: primaryGreen.withAlpha((0.2 * 255).round()),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -456,7 +449,7 @@ class Home extends StatelessWidget {
                         'إغلاق',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Home.primaryGreen,
+                          color: primaryGreen,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -481,12 +474,12 @@ class Home extends StatelessWidget {
             children: [
               const Text(
                 'الصف:',
-                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+                style: TextStyle(color: secondaryText, fontSize: 15),
               ),
               Text(
                 '${user.grade}',
                 style: const TextStyle(
-                  color: Home.primaryText,
+                  color: primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -499,12 +492,12 @@ class Home extends StatelessWidget {
             children: [
               const Text(
                 'الفصل:',
-                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+                style: TextStyle(color: secondaryText, fontSize: 15),
               ),
               Text(
                 '${user.classNumber}',
                 style: const TextStyle(
-                  color: Home.primaryText,
+                  color: primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -523,12 +516,12 @@ class Home extends StatelessWidget {
             children: [
               const Text(
                 'عدد المواد:',
-                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+                style: TextStyle(color: secondaryText, fontSize: 15),
               ),
               Text(
                 '${user.subjects.isNotEmpty ? user.subjects.length : 0}',
                 style: const TextStyle(
-                  color: Home.primaryText,
+                  color: primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -541,12 +534,12 @@ class Home extends StatelessWidget {
             children: [
               const Text(
                 'الصف:',
-                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+                style: TextStyle(color: secondaryText, fontSize: 15),
               ),
               Text(
                 user.grades.join(' - '),
                 style: const TextStyle(
-                  color: Home.primaryText,
+                  color: primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -572,27 +565,23 @@ class Home extends StatelessWidget {
                       vertical: 8,
                     ), // 👈 padding بدل width ثابت
                     decoration: BoxDecoration(
-                      color: Colors.white10,
+                      color: primaryText,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Home.primaryText.withOpacity(0.2),
+                        color: primaryText.withAlpha((0.2 * 255).round()),
                       ),
                     ),
                     child: Row(
                       mainAxisSize:
                           MainAxisSize.min, // 👈 يخلي العرض على قد المحتوى
                       children: [
-                        const Icon(
-                          Icons.book,
-                          color: Home.primaryText,
-                          size: 22,
-                        ),
+                        const Icon(Icons.book, color: primaryText, size: 22),
                         const SizedBox(width: 6),
                         Text(
                           subject.name,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color: Home.primaryText,
+                            color: primaryText,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
@@ -606,7 +595,7 @@ class Home extends StatelessWidget {
           else
             const Text(
               'لا توجد مواد مضافة بعد.',
-              style: TextStyle(color: Home.secondaryText, fontSize: 14),
+              style: TextStyle(color: secondaryText, fontSize: 14),
             ),
         ],
       );
@@ -615,7 +604,7 @@ class Home extends StatelessWidget {
         child: Text(
           'مدير النظام',
           style: TextStyle(
-            color: Home.primaryText,
+            color: primaryText,
             fontWeight: FontWeight.w600,
             fontSize: 15,
           ),

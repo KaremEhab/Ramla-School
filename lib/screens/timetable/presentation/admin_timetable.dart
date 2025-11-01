@@ -53,7 +53,7 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
 
     final timetables = snapshot.docs.map((doc) {
       // Use the safe spread operator for mapping
-      return TimetableModel.fromMap({...doc.data() ?? {}, 'id': doc.id});
+      return TimetableModel.fromMap({...doc.data(), 'id': doc.id});
     }).toList();
 
     setState(() => _timetables = timetables);
@@ -106,7 +106,7 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       showDragHandle: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -132,7 +132,7 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -157,10 +157,10 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white, // Match screen background
+        backgroundColor: screenBg, // Match screen background
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false, // No back button
@@ -169,7 +169,7 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
         title: Text(
           'إدارة الجداول الأسبوعية',
           style: TextStyle(
-            color: Home.primaryGreen,
+            color: primaryGreen,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -185,9 +185,9 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: screenBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: dividerColor),
                     ),
                     child: DropdownButton<int>(
                       isExpanded: true,
@@ -214,9 +214,9 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: screenBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: dividerColor),
                     ),
                     child: DropdownButton<int>(
                       isExpanded: true,
@@ -240,9 +240,9 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: screenBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: dividerColor),
                     ),
                     child: DropdownButton<Grade>(
                       isExpanded: true,
@@ -287,9 +287,9 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Home.primaryGreen.withOpacity(0.1),
+                      color: primaryGreen.withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Home.primaryGreen, width: 1.5),
+                      border: Border.all(color: primaryGreen, width: 1.5),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -309,8 +309,8 @@ class _AdminTimetablePageState extends State<AdminTimetablePage> {
               }).toList(),
             ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Home.primaryGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: primaryGreen,
+        foregroundColor: screenBg,
         icon: const Icon(Icons.add),
         label: const Text('إضافة جدول جديد'),
         onPressed: () => _openAddDaySheet(context),
@@ -388,7 +388,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -425,7 +425,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                 child: DropdownButtonFormField<int>(
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: textFieldFill,
                     labelText: 'السنة',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -454,7 +454,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                 child: DropdownButtonFormField<int>(
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: textFieldFill,
                     labelText: 'الشهر',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -482,7 +482,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                 child: DropdownButtonFormField<int>(
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: textFieldFill,
                     labelText: 'اليوم',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -530,8 +530,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                       7: 'الأحد',
                     };
                     // Note: date.weekday is 1 (Mon) - 7 (Sun). We map to the desired Arabic day.
-                    final dayLabel =
-                        "جدول يوم ${arabicDays[date.weekday]}" ?? '';
+                    final dayLabel = "جدول يوم ${arabicDays[date.weekday]}";
 
                     return Card(
                       elevation: 0,
@@ -549,14 +548,14 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                             IconButton(
                               icon: const Icon(
                                 IconlyBold.edit,
-                                color: Home.primaryGreen,
+                                color: primaryGreen,
                               ),
                               onPressed: () => _openEditSheet(t),
                             ),
                             IconButton(
                               icon: const Icon(
                                 IconlyBold.delete,
-                                color: Colors.red,
+                                color: offlineIndicator,
                               ),
                               onPressed: () async {
                                 final confirm = await showDialog<bool>(
@@ -587,6 +586,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                                               .doc(widget.timetables[index].id)
                                               .delete();
 
+                                          if (!context.mounted) return;
                                           Navigator.pop(
                                             context,
                                             true,
@@ -603,6 +603,7 @@ class _ClassTimetableListState extends State<_ClassTimetableList> {
                                   widget.onUpdated();
 
                                   // Navigate back
+                                  if (!context.mounted) return;
                                   Navigator.pop(context);
                                 }
                               },
@@ -675,6 +676,7 @@ class _EditTimetableSheetState extends State<_EditTimetableSheet> {
           .update(updated.toMap());
 
       widget.onUpdated();
+      if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {
       // Handle save error (e.g., show a snackbar)
@@ -704,7 +706,7 @@ class _EditTimetableSheetState extends State<_EditTimetableSheet> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Colors.black87,
+                color: primaryText,
               ),
             ),
             const SizedBox(height: 16),
@@ -729,8 +731,19 @@ class _EditTimetableSheetState extends State<_EditTimetableSheet> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.save),
-                label: const Text('حفظ التعديلات'),
                 onPressed: _saveChanges,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryGreen,
+                  foregroundColor: screenBg,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                label: const Text(
+                  'حفظ التعديلات',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -929,6 +942,7 @@ class _AddDaySheetState extends State<_AddDaySheet> {
     }
     // --- END FIX ---
 
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
@@ -959,8 +973,9 @@ class _AddDaySheetState extends State<_AddDaySheet> {
 
     if (breaksCount == 0 && lessonsCount >= 2 && lessonsCount <= 4) {
       canAddBreak = true;
-    } else if (breaksCount == 1 && lessonsCount >= 5 && lessonsCount < 6)
+    } else if (breaksCount == 1 && lessonsCount >= 5 && lessonsCount < 6) {
       canAddBreak = true;
+    }
     if (_lessons.isNotEmpty && _lessons.last.isBreak) canAddBreak = false;
 
     final showAddButtons =
@@ -1003,7 +1018,7 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                 DropdownButtonFormField<Grade>(
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: textFieldFill,
                     labelText: 'الصف',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -1029,7 +1044,7 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                 TextFormField(
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: textFieldFill,
                     labelText: 'رقم الفصل',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -1066,11 +1081,11 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                         onSelected: disabled
                             ? null
                             : (val) => setState(() => _selectedDays[day] = val),
-                        selectedColor: Home.primaryGreen.withOpacity(0.2),
-                        checkmarkColor: Home.primaryGreen,
-                        backgroundColor: disabled
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade200,
+                        selectedColor: primaryGreen.withAlpha(
+                          (0.2 * 255).round(),
+                        ),
+                        checkmarkColor: primaryGreen,
+                        backgroundColor: disabled ? iconGrey : dividerColor,
                       );
                     }).toList(),
                   ),
@@ -1105,8 +1120,8 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                             onPressed: _addLesson,
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
-                              backgroundColor: Home.primaryGreen,
-                              foregroundColor: Colors.white,
+                              backgroundColor: primaryGreen,
+                              foregroundColor: screenBg,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -1123,8 +1138,8 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                             onPressed: () => _addLesson(isBreak: true),
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
-                              backgroundColor: Colors.yellow,
-                              foregroundColor: Colors.black54,
+                              backgroundColor: yellowColor,
+                              foregroundColor: primaryText,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -1138,10 +1153,27 @@ class _AddDaySheetState extends State<_AddDaySheet> {
                   Padding(
                     padding: const EdgeInsets.only(top: 24),
                     child: Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.save),
-                        label: const Text('حفظ الجدول'),
-                        onPressed: _saveDay,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.save),
+                          onPressed: _saveDay,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryGreen,
+                            foregroundColor: screenBg,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          label: const Text(
+                            'حفظ الجدول',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1209,8 +1241,8 @@ class _LessonCardState extends State<_LessonCard> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0,
       color: widget.lesson.isBreak
-          ? Colors.yellow.withOpacity(0.3)
-          : Home.primaryGreen.withOpacity(0.3),
+          ? yellowColor.withAlpha((0.3 * 255).round())
+          : primaryGreen.withAlpha((0.3 * 255).round()),
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1231,7 +1263,7 @@ class _LessonCardState extends State<_LessonCard> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: offlineIndicator),
                   onPressed: widget.onRemove,
                 ),
               ],
@@ -1242,7 +1274,7 @@ class _LessonCardState extends State<_LessonCard> {
             // Time info
             Text(
               'من ${DateFormat('HH:mm').format(widget.lesson.startTime.toDate())} إلى ${DateFormat('HH:mm').format(widget.lesson.endTime.toDate())}',
-              style: TextStyle(color: Colors.grey.shade700),
+              style: TextStyle(color: secondaryText),
             ),
 
             const SizedBox(height: 8),
@@ -1255,7 +1287,7 @@ class _LessonCardState extends State<_LessonCard> {
                     child: DropdownButtonFormField<SchoolSubject>(
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: textFieldFill,
                         hint: const Text('المادة'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -1297,7 +1329,7 @@ class _LessonCardState extends State<_LessonCard> {
                     child: DropdownButtonFormField<TeacherModel>(
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: textFieldFill,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -1459,7 +1491,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
       return Card(
         // Break UI (simplified)
         elevation: 0,
-        color: Colors.yellow.withOpacity(0.3),
+        color: yellowColor.withAlpha((0.3 * 255).round()),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Text('استراحة - ${widget.lesson.duration} دقيقة'),
@@ -1471,7 +1503,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0,
-      color: Home.primaryGreen.withOpacity(0.08),
+      color: primaryGreen.withAlpha((0.3 * 255).round()),
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1498,7 +1530,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
             // Time info
             Text(
               'من ${DateFormat('HH:mm').format(widget.lesson.startTime.toDate())} إلى ${DateFormat('HH:mm').format(widget.lesson.endTime.toDate())}',
-              style: TextStyle(color: Colors.grey.shade700),
+              style: TextStyle(color: secondaryText),
             ),
 
             const SizedBox(height: 8),
@@ -1507,7 +1539,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
             DropdownButtonFormField<SchoolSubject>(
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: textFieldFill,
                 hintText: 'المادة',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -1543,7 +1575,7 @@ class _LessonEditCardState extends State<LessonEditCard> {
             DropdownButtonFormField<TeacherModel>(
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: textFieldFill,
                 hintText: 'المعلم',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),

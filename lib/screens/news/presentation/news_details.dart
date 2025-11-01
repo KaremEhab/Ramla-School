@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
+import 'package:ramla_school/core/app/constants.dart';
 // Assuming NewsModel is here or imported via constants
 import 'package:ramla_school/core/models/news_model.dart'; // Direct import if preferred
 
@@ -8,13 +11,6 @@ class NewsDetailsScreen extends StatelessWidget {
 
   const NewsDetailsScreen({super.key, required this.news});
 
-  // --- Colors ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color accentOrange = Color(0xFFF39C12); // Category color
-  static const Color imagePlaceholderBg = Color(0xFFEEEEEE);
-
   @override
   Widget build(BuildContext context) {
     // Formatter for the date
@@ -22,10 +18,10 @@ class NewsDetailsScreen extends StatelessWidget {
     String formattedDate = arabicDateFormat.format(news.createdAt);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         forceMaterialTransparency: true,
@@ -61,7 +57,7 @@ class NewsDetailsScreen extends StatelessWidget {
                   Text(
                     news.category,
                     style: const TextStyle(
-                      color: accentOrange,
+                      color: chartOrange,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,11 +107,11 @@ class NewsDetailsScreen extends StatelessWidget {
     if (news.images.isEmpty) {
       return Container(
         height: 220, // Same height as the scroller
-        color: imagePlaceholderBg,
+        color: screenBg,
         alignment: Alignment.center,
         child: const Icon(
           Icons.image_not_supported_outlined,
-          color: Colors.grey,
+          color: iconGrey,
           size: 50,
         ),
       );
@@ -146,7 +142,7 @@ class NewsDetailsScreen extends StatelessWidget {
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
-                      color: imagePlaceholderBg,
+                      color: dividerColor,
                       child: Center(
                         child: CircularProgressIndicator(
                           value: loadingProgress.expectedTotalBytes != null
@@ -160,12 +156,12 @@ class NewsDetailsScreen extends StatelessWidget {
                     );
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    print("Error loading image: $error"); // Log error
+                    log("Error loading image: $error"); // Log error
                     return Container(
-                      color: imagePlaceholderBg,
+                      color: dividerColor,
                       child: const Icon(
                         Icons.error_outline,
-                        color: Colors.redAccent,
+                        color: offlineIndicator,
                       ),
                     );
                   },

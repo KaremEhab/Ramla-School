@@ -31,14 +31,6 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  // Colors based on your design
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color accentOrange = Color(0xFFF39C12);
-  static const Color textFieldFill = Color(0xFFF9F9F9);
-  static const Color iconGrey = Color(0xFFAAAAAA);
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
@@ -99,7 +91,7 @@ class _LoginState extends State<Login> {
             FocusScope.of(context).unfocus();
           },
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: screenBg,
             body: Stack(
               children: [
                 // 1. Top-Right Green Ornament
@@ -112,7 +104,7 @@ class _LoginState extends State<Login> {
                     child: Container(
                       width: 200,
                       height: 140,
-                      color: primaryGreen.withOpacity(0.8),
+                      color: primaryGreen.withAlpha((0.8 * 255).round()),
                     ),
                   ),
                 ),
@@ -209,7 +201,7 @@ class _LoginState extends State<Login> {
                                   child: const Text(
                                     'هل نسيت كلمة السر؟',
                                     style: TextStyle(
-                                      color: accentOrange,
+                                      color: chartOrange,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -224,7 +216,7 @@ class _LoginState extends State<Login> {
                                   onPressed: _login,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryGreen,
-                                    foregroundColor: Colors.white,
+                                    foregroundColor: screenBg,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
                                     ),
@@ -249,7 +241,6 @@ class _LoginState extends State<Login> {
                                   text: TextSpan(
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontFamily: 'Tajawal',
                                       color: secondaryText,
                                     ),
                                     children: [

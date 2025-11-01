@@ -42,12 +42,6 @@ class _SignupState extends State<Signup> {
     UserRole.teacher,
   ];
 
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color textFieldFill = Color(0xFFF9F9F9);
-  static const Color iconGrey = Color(0xFFAAAAAA);
-
   @override
   void dispose() {
     _firstNameController.dispose();
@@ -118,7 +112,7 @@ class _SignupState extends State<Signup> {
         return GestureDetector(
           onTap: FocusScope.of(context).unfocus,
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: screenBg,
             body: Stack(
               children: [
                 Positioned(
@@ -129,7 +123,7 @@ class _SignupState extends State<Signup> {
                     child: Container(
                       width: 200,
                       height: 140,
-                      color: primaryGreen.withOpacity(0.8),
+                      color: primaryGreen.withAlpha((0.8 * 255).round()),
                     ),
                   ),
                 ),
@@ -152,7 +146,7 @@ class _SignupState extends State<Signup> {
                                       color: primaryGreen,
                                     ),
                                     style: IconButton.styleFrom(
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: screenBg,
                                     ),
                                     onPressed: () =>
                                         Navigator.of(context).pop(),
@@ -296,7 +290,7 @@ class _SignupState extends State<Signup> {
                                       : _signup,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryGreen,
-                                    foregroundColor: Colors.white,
+                                    foregroundColor: screenBg,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
                                     ),
@@ -323,7 +317,6 @@ class _SignupState extends State<Signup> {
                                   text: TextSpan(
                                     style: const TextStyle(
                                       fontSize: 14,
-                                      fontFamily: 'Tajawal',
                                       color: secondaryText,
                                     ),
                                     children: [
@@ -452,7 +445,7 @@ class _SignupState extends State<Signup> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: primaryGreen.withOpacity(0.2),
+                            color: primaryGreen.withAlpha((0.2 * 255).round()),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -623,7 +616,7 @@ class _SignupState extends State<Signup> {
                           ),
                           child: const Text(
                             'إلغاء',
-                            style: TextStyle(color: Colors.black87),
+                            style: TextStyle(color: primaryText),
                           ),
                         ),
                       ),
@@ -636,7 +629,7 @@ class _SignupState extends State<Signup> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryGreen,
-                            foregroundColor: Colors.white,
+                            foregroundColor: screenBg,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

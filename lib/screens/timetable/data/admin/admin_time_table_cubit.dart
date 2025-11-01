@@ -50,7 +50,7 @@ class AdminTimetableCubit extends Cubit<AdminTimetableState> {
         log('------------------------');
 
         // Use the safe spread operator for mapping
-        return TimetableModel.fromMap({...doc.data() ?? {}, 'id': doc.id});
+        return TimetableModel.fromMap({...doc.data(), 'id': doc.id});
       }).toList();
       // --- ADDED LOGGING END ---
 

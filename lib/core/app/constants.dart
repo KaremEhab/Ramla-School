@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/core/models/notifications_model.dart';
@@ -141,6 +140,27 @@ extension SubjectExtension on SchoolSubject {
     }
   }
 }
+
+// ------------------- APP COLORS -------------------
+
+const Color primaryGreen = Color(0xFF5DB075);
+const Color primaryText = Color(0xFF333333);
+const Color secondaryText = Color(0xFF666666);
+const Color iconGrey = Color(0xFFAAAAAA);
+const Color screenBg = Color(0xFFF8F8F8);
+const Color dividerColor = Color(0xFFEEEEEE);
+const Color chartOrange = Color(0xFFFFA500);
+const Color chartRed = Color(0xFFDC3545);
+const Color chartBlue = Color(0xFF007BFF);
+const Color otherMessageBg = Color(0xFFF0F0F0);
+const Color inputBg = Color(0xFFF9F9F9);
+const Color newNotificationBg = Color(0xFFD7F5E2);
+const Color chartGreen = primaryGreen;
+const Color myMessageBg = primaryGreen;
+const Color yellowColor = Colors.yellow;
+const Color onlineIndicator = Colors.green;
+const Color offlineIndicator = Colors.red;
+Color textFieldFill = Colors.grey.shade100;
 
 // ------------------- SUBJECT COLOR MAP -------------------
 

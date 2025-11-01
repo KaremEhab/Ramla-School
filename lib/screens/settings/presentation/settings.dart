@@ -23,27 +23,17 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
 
   late TabController _tabController;
 
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color dividerColor = Color(0xFFEEEEEE);
-  static const Color deleteRed = Colors.redAccent;
-  static const Color editBlue = Colors.blueAccent;
-  static const Color screenBg = Color(0xFFF8F8F8);
-  static Color textFieldFill = Colors.grey.shade100;
-  static const Color iconGrey = Color(0xFFAAAAAA);
-
   List<TeacherModel> _teachers = [];
   List<StudentModel> _students = [];
 
   // --- State for the Add User Modal (Reset/Managed in the sheet open/close cycle) ---
-  UserRole? _modalRole;
+  UserRole? modalRole;
   List<Grade> _selectedGrades = [];
   Grade? _selectedGrade;
   List<SchoolSubject> _selectedSubjects = [];
   // --- End State for the Add User Modal ---
 
-  final bool _isSaving = false;
+  final bool isSaving = false;
 
   @override
   void initState() {
@@ -80,7 +70,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
     _selectedGrades.clear();
     _selectedGrade = null;
     _selectedSubjects.clear();
-    _modalRole = null;
+    modalRole = null;
     _passwordController.clear();
     _confirmPasswordController.clear();
   }
@@ -93,13 +83,13 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
     final classNumberController = TextEditingController();
 
     _resetModalFields();
-    _modalRole = role;
+    modalRole = role;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -120,7 +110,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.error),
-                  backgroundColor: deleteRed,
+                  backgroundColor: offlineIndicator,
                 ),
               );
             }
@@ -153,7 +143,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Tajawal',
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -210,8 +199,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                             },
                           ),
                         ],
-                        const SizedBox(height: 12),
-
                         // --- Password Fields ---
                         CustomTextField(
                           controller: _passwordController,
@@ -256,20 +243,17 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: screenBg,
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Icon(Icons.add, color: Colors.white),
+                              : const Icon(Icons.add, color: screenBg),
                           label: Text(
                             context.watch<AdminSettingsCubit>().state
                                     is AdminSettingsLoading
                                 ? 'جاري إنشاء الحساب'
                                 : 'إنشاء الحساب',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Tajawal',
-                            ),
+                            style: const TextStyle(color: screenBg),
                           ),
                           onPressed:
                               context.watch<AdminSettingsCubit>().state
@@ -399,7 +383,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                       .map(
                         (subject) => Chip(
                           label: Text(subject.name),
-                          backgroundColor: primaryGreen.withOpacity(0.2),
+                          backgroundColor: primaryGreen.withAlpha(
+                            (0.2 * 255).round(),
+                          ),
                           deleteIcon: const Icon(Icons.close, size: 18),
                           onDeleted: () {
                             setModalState(
@@ -453,7 +439,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                             .map(
                               (g) => Chip(
                                 label: Text(g.label),
-                                backgroundColor: primaryGreen.withOpacity(0.2),
+                                backgroundColor: primaryGreen.withAlpha(
+                                  (0.2 * 255).round(),
+                                ),
                                 deleteIcon: const Icon(Icons.close, size: 18),
                                 onDeleted: () {
                                   setModalState(
@@ -663,7 +651,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
     String userName,
     VoidCallback onConfirm,
   ) async {
-    // ... (Your original delete dialog code)
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -677,7 +664,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: deleteRed),
+              style: TextButton.styleFrom(foregroundColor: offlineIndicator),
               child: const Text('حذف'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
@@ -698,7 +685,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
     return Scaffold(
       backgroundColor: screenBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         shape: const Border(
           bottom: BorderSide(color: dividerColor, width: 0.5),
@@ -707,11 +694,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
         automaticallyImplyLeading: false,
         title: const Text(
           'إدارة المستخدمين',
-          style: TextStyle(
-            color: primaryGreen,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Tajawal',
-          ),
+          style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -720,12 +703,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
           indicatorColor: primaryGreen,
           indicatorWeight: 3.0,
           labelStyle: const TextStyle(
-            fontFamily: 'Tajawal',
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
           unselectedLabelStyle: const TextStyle(
-            fontFamily: 'Tajawal',
             fontWeight: FontWeight.normal,
             fontSize: 16,
           ),
@@ -774,12 +755,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openAddUserSheet(UserRole.admin),
         backgroundColor: primaryGreen,
-        foregroundColor: Colors.white,
+        foregroundColor: screenBg,
         icon: const Icon(Icons.admin_panel_settings_outlined),
-        label: const Text(
-          'إضافة مسئولة',
-          style: TextStyle(fontFamily: 'Tajawal'),
-        ),
+        label: const Text('إضافة مسئولة'),
       ),
     );
   }
@@ -808,13 +786,10 @@ class _UserListSection<T> extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_circle_outline),
-            label: Text(
-              addLabel,
-              style: const TextStyle(fontFamily: 'Tajawal'),
-            ),
+            label: Text(addLabel),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _AdminSettingsScreenState.primaryGreen,
-              foregroundColor: Colors.white,
+              backgroundColor: primaryGreen,
+              foregroundColor: screenBg,
               minimumSize: const Size(double.infinity, 45),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -827,10 +802,7 @@ class _UserListSection<T> extends StatelessWidget {
               ? const Center(
                   child: Text(
                     'لا يوجد مستخدمات حالياً',
-                    style: TextStyle(
-                      color: _AdminSettingsScreenState.secondaryText,
-                      fontFamily: 'Tajawal',
-                    ),
+                    style: TextStyle(color: secondaryText),
                   ),
                 )
               : ListView.separated(
@@ -867,11 +839,11 @@ class _UserCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: screenBg,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: Colors.grey.withAlpha((0.08 * 255).round()),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -881,8 +853,8 @@ class _UserCard extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 25,
-            backgroundColor: _AdminSettingsScreenState.primaryGreen,
-            child: Icon(Icons.person, color: Colors.white),
+            backgroundColor: primaryGreen,
+            child: Icon(Icons.person, color: screenBg),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -892,7 +864,6 @@ class _UserCard extends StatelessWidget {
                 Text(
                   name,
                   style: const TextStyle(
-                    fontFamily: 'Tajawal',
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -900,29 +871,18 @@ class _UserCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Tajawal',
-                    color: _AdminSettingsScreenState.secondaryText,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: secondaryText, fontSize: 13),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontFamily: 'Tajawal',
-                    color: Colors.grey,
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(color: iconGrey, fontSize: 11),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(
-              Icons.delete_outline,
-              color: _AdminSettingsScreenState.deleteRed,
-            ),
+            icon: const Icon(Icons.delete_outline, color: offlineIndicator),
             onPressed: onDelete,
           ),
         ],

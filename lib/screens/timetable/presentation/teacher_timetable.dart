@@ -81,7 +81,7 @@ class _TeacherTimetableScreenState extends State<TeacherTimetableScreen> {
             LessonEntry(
               subject: lesson.subject!.name,
               teacher: lesson.teacher?.fullName ?? '',
-              grade: t.grade.label ?? 'غير محدد',
+              grade: t.grade.label,
               classNumber: t.classNumber.toString(),
               lessonIndex: i + 1,
               duration: '${lesson.duration} دقيقة',
@@ -347,7 +347,7 @@ class _TeacherTimetableScreenState extends State<TeacherTimetableScreen> {
         final entry = _selectedDayTimeline[index];
         if (entry is LessonEntry) {
           return Card(
-            color: primaryGreen.withOpacity(0.9),
+            color: primaryGreen.withAlpha((0.9 * 255).round()),
             elevation: 0,
             margin: const EdgeInsets.symmetric(vertical: 6),
             child: ListTile(
@@ -515,7 +515,7 @@ class _DayCard extends StatelessWidget {
               dayName,
               style: TextStyle(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.9)
+                    ? Colors.white.withAlpha((0.9 * 255).round())
                     : _TeacherTimetableScreenState.secondaryText,
                 fontSize: 14,
               ),

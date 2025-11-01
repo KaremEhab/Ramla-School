@@ -5,21 +5,13 @@ import 'package:ramla_school/core/models/notifications_model.dart';
 class Notifications extends StatelessWidget {
   const Notifications({super.key});
 
-  // --- Colors (Sampled from image) ---
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color newNotificationBg = Color(
-    0xFFD7F5E2,
-  ); // Light green background
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
         // --- Shadowless AppBar ---
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0, // No shadow
         scrolledUnderElevation: 0, // No shadow when scrolling
         // --- End Shadowless AppBar ---
@@ -63,8 +55,8 @@ class _NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Determine background color based on 'isNew'
     final Color backgroundColor = notification.isNew
-        ? Notifications.newNotificationBg
-        : Colors.white; // Or a very light grey like Colors.grey[50]
+        ? newNotificationBg
+        : screenBg; // Or a very light grey like Colors.grey[50]
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -79,7 +71,7 @@ class _NotificationCard extends StatelessWidget {
             ? [
                 // Optional subtle shadow for new items
                 BoxShadow(
-                  color: Notifications.primaryGreen.withOpacity(0.08),
+                  color: primaryGreen.withAlpha((0.08 * 255).round()),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -108,7 +100,7 @@ class _NotificationCard extends StatelessWidget {
                       child: Text(
                         notification.title,
                         style: const TextStyle(
-                          color: Notifications.primaryText,
+                          color: primaryText,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -117,7 +109,7 @@ class _NotificationCard extends StatelessWidget {
                     Text(
                       notification.timeAgo,
                       style: const TextStyle(
-                        color: Notifications.secondaryText,
+                        color: secondaryText,
                         fontSize: 12,
                       ),
                     ),
@@ -127,7 +119,7 @@ class _NotificationCard extends StatelessWidget {
                 Text(
                   notification.body,
                   style: const TextStyle(
-                    color: Notifications.secondaryText,
+                    color: secondaryText,
                     fontSize: 14,
                     height: 1.4, // Adjust line spacing if needed
                   ),

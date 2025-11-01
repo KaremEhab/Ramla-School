@@ -126,16 +126,18 @@ class _LayoutScreenState extends State<LayoutScreen> {
       ),
     );
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
         if (_currentIndex != 0) {
           _onNavTapped(0);
-          return false;
+          return; // Action handled: navigated to the first tab.
         }
 
         final now = DateTime.now();
         if (_lastPressed == null ||
             now.difference(_lastPressed!) > const Duration(seconds: 2)) {
+          // First tap or time has elapsed: show message and record time
           _lastPressed = now;
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -144,12 +146,10 @@ class _LayoutScreenState extends State<LayoutScreen> {
               duration: Duration(seconds: 2),
             ),
           );
-          return false;
+        } else {
+          // Second tap within 2 seconds: Exit app
+          SystemNavigator.pop();
         }
-
-        // Exit app
-        SystemNavigator.pop();
-        return true;
       },
       child: Scaffold(
         body: PageView(
@@ -182,29 +182,5 @@ class _MyClassScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(body: Center(child: Text('صفحة فصلي')));
-  }
-}
-
-class _AdminDashboardScreen extends StatelessWidget {
-  const _AdminDashboardScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة الأدمن الرئيسية')));
-  }
-}
-
-class _AnalyticsScreen extends StatelessWidget {
-  const _AnalyticsScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة التحليلات')));
-  }
-}
-
-class _SettingsScreen extends StatelessWidget {
-  const _SettingsScreen();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('صفحة الإعدادات')));
   }
 }

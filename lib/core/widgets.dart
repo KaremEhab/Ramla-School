@@ -1,5 +1,6 @@
 // News Card Widget
 import 'package:flutter/material.dart';
+import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/screens/news/presentation/news_details.dart';
 
@@ -23,12 +24,12 @@ class NewsCardWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: screenBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: dividerColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.05),
+              color: iconGrey.withAlpha((0.05 * 255).round()),
               spreadRadius: 1,
               blurRadius: 10,
               offset: const Offset(0, 5),
@@ -49,13 +50,13 @@ class NewsCardWidget extends StatelessWidget {
                   height: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.error, color: Colors.red),
+                    color: dividerColor,
+                    child: const Icon(Icons.error, color: offlineIndicator),
                   ),
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
-                      color: Colors.grey[200],
+                      color: dividerColor,
                       child: const Center(child: CircularProgressIndicator()),
                     );
                   },
@@ -72,7 +73,7 @@ class NewsCardWidget extends StatelessWidget {
                   Text(
                     news.category,
                     style: const TextStyle(
-                      color: NewsCardWidget.accentOrange,
+                      color: chartOrange,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -83,7 +84,7 @@ class NewsCardWidget extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: NewsCardWidget.primaryText,
+                      color: primaryText,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -96,9 +97,6 @@ class NewsCardWidget extends StatelessWidget {
       ),
     );
   }
-
-  static const Color primaryText = Color(0xFF333333);
-  static const Color accentOrange = Color(0xFFF39C12);
 }
 
 class CustomTextField extends StatefulWidget {
@@ -158,19 +156,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
   InputDecoration _buildInputDecoration() {
     return InputDecoration(
       hintText: widget.hint,
-      hintStyle: const TextStyle(color: Colors.grey),
+      hintStyle: const TextStyle(color: iconGrey),
       filled: true,
-      fillColor: Colors.grey.shade100,
-      prefixIcon: widget.isDropdown
-          ? null
-          : Icon(widget.icon, color: Colors.grey),
+      fillColor: textFieldFill,
+      prefixIcon: widget.isDropdown ? null : Icon(widget.icon, color: iconGrey),
       suffixIcon: widget.isPassword
           ? IconButton(
               icon: Icon(
                 _obscureText
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
-                color: Colors.grey,
+                color: iconGrey,
               ),
               onPressed: () {
                 setState(() {
@@ -178,14 +174,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 });
               },
             )
-          : (widget.isDropdown ? Icon(widget.icon, color: Colors.grey) : null),
+          : (widget.isDropdown ? Icon(widget.icon, color: iconGrey) : null),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.green),
+        borderSide: const BorderSide(color: onlineIndicator),
       ),
     );
   }

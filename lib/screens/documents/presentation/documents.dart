@@ -11,11 +11,6 @@ class Documents extends StatefulWidget {
 
   const Documents({super.key, required this.documentUrls});
 
-  static const Color primaryGreen = Color(0xFF5DB075);
-  static const Color primaryText = Color(0xFF333333);
-  static const Color secondaryText = Color(0xFF666666);
-  static const Color iconGrey = Color(0xFFAAAAAA);
-
   @override
   State<Documents> createState() => _DocumentsState();
 }
@@ -60,22 +55,19 @@ class _DocumentsState extends State<Documents> {
     final DateFormat arabicDateFormat = DateFormat('d/M/y', 'ar');
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: screenBg,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Documents.primaryGreen,
-          ),
+          icon: const Icon(Icons.arrow_back_ios_new, color: primaryGreen),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
           'الملفات الدراسية',
           style: TextStyle(
-            color: Documents.primaryGreen,
+            color: primaryGreen,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -93,27 +85,22 @@ class _DocumentsState extends State<Documents> {
                       children: [
                         Icon(
                           Icons.insert_drive_file_outlined,
-                          color: Colors.grey[400],
+                          color: iconGrey,
                           size: 80,
                         ),
                         const SizedBox(height: 16),
                         const Text(
                           'لا توجد ملفات متاحة حالياً',
                           style: TextStyle(
-                            color: Documents.secondaryText,
+                            color: secondaryText,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'Tajawal',
                           ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
                           'سيتم عرض الملفات هنا عند إضافتها',
-                          style: TextStyle(
-                            color: Documents.iconGrey,
-                            fontSize: 14,
-                            fontFamily: 'Tajawal',
-                          ),
+                          style: TextStyle(color: iconGrey, fontSize: 14),
                         ),
                       ],
                     ),
@@ -146,7 +133,7 @@ class _DocumentsState extends State<Documents> {
       // ✅ (الإصلاح 3) تم تصحيح المنطق ليتطابق مع التعليق
       floatingActionButton: currentRole == UserRole.teacher
           ? FloatingActionButton(
-              backgroundColor: Documents.primaryGreen,
+              backgroundColor: primaryGreen,
               onPressed: _showAddDocumentSheet,
               shape: CircleBorder(),
               child: const Icon(Icons.add, color: Colors.white),
@@ -170,14 +157,8 @@ class _DocumentsState extends State<Documents> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedSubject ?? 'الكل',
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Documents.iconGrey,
-                ),
-                style: const TextStyle(
-                  color: Documents.primaryText,
-                  fontFamily: 'Tajawal',
-                ),
+                icon: const Icon(Icons.keyboard_arrow_down, color: iconGrey),
+                style: const TextStyle(color: primaryText),
                 items: _subjects.map((subject) {
                   return DropdownMenuItem<String>(
                     value: subject,
@@ -196,10 +177,10 @@ class _DocumentsState extends State<Documents> {
               children: [
                 Text(
                   _sortByRecent ? 'حديثاً' : 'قديماً',
-                  style: const TextStyle(color: Documents.secondaryText),
+                  style: const TextStyle(color: secondaryText),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.history, color: Documents.iconGrey),
+                const Icon(Icons.history, color: iconGrey),
               ],
             ),
           ),
@@ -225,7 +206,7 @@ class _DocumentsState extends State<Documents> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: screenBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -245,10 +226,9 @@ class _DocumentsState extends State<Documents> {
                   const Text(
                     'إضافة ملف جديد',
                     style: TextStyle(
-                      color: Documents.primaryGreen,
+                      color: primaryGreen,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Tajawal',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -276,10 +256,7 @@ class _DocumentsState extends State<Documents> {
                       labelText: 'اسم المادة',
                       border: OutlineInputBorder(),
                     ),
-                    style: const TextStyle(
-                      fontFamily: 'Tajawal',
-                      color: Documents.primaryText,
-                    ),
+                    style: const TextStyle(color: primaryText),
                   ),
                   const SizedBox(height: 12),
 
@@ -307,34 +284,27 @@ class _DocumentsState extends State<Documents> {
                         );
                       }
                     },
-                    icon: const Icon(
-                      Icons.upload_file,
-                      color: Documents.primaryGreen,
-                    ),
+                    icon: const Icon(Icons.upload_file, color: primaryGreen),
                     label: Text(
                       selectedFilePath == null
                           ? 'اختيار ملف PDF من الجهاز'
                           : 'تم اختيار الملف ✓',
-                      style: const TextStyle(fontFamily: 'Tajawal'),
                     ),
                   ),
                   const SizedBox(height: 20),
 
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Documents.primaryGreen,
+                      backgroundColor: primaryGreen,
                       minimumSize: const Size(double.infinity, 48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    icon: const Icon(Icons.save, color: Colors.white),
+                    icon: const Icon(Icons.save, color: screenBg),
                     label: const Text(
                       'حفظ الملف',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Tajawal',
-                      ),
+                      style: TextStyle(color: screenBg),
                     ),
                     onPressed: () {
                       if (titleController.text.isEmpty ||
@@ -399,11 +369,11 @@ class _DocumentCard extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: screenBg,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: iconGrey.withAlpha((0.1 * 255).round()),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 2),
@@ -420,17 +390,17 @@ class _DocumentCard extends StatelessWidget {
                   document.thumbnailUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[200],
+                    color: dividerColor,
                     alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                    child: const Icon(Icons.broken_image, color: iconGrey),
                   ),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(top: BorderSide(color: Colors.grey[200]!)),
+                  color: screenBg,
+                  border: Border(top: BorderSide(color: dividerColor)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -442,7 +412,7 @@ class _DocumentCard extends StatelessWidget {
                           Text(
                             document.title,
                             style: const TextStyle(
-                              color: Documents.primaryText,
+                              color: primaryText,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -453,7 +423,7 @@ class _DocumentCard extends StatelessWidget {
                           Text(
                             'بتاريخ $formattedDate',
                             style: const TextStyle(
-                              color: Documents.secondaryText,
+                              color: secondaryText,
                               fontSize: 12,
                             ),
                           ),
@@ -462,7 +432,7 @@ class _DocumentCard extends StatelessWidget {
                     ),
                     const Icon(
                       Icons.description_outlined,
-                      color: Documents.iconGrey,
+                      color: iconGrey,
                       size: 20,
                     ),
                   ],
@@ -487,10 +457,7 @@ class PdfViewerPage extends StatelessWidget {
     final bool isNetwork = url.startsWith('http');
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Documents.primaryGreen,
-      ),
+      appBar: AppBar(title: Text(title), backgroundColor: primaryGreen),
       body: isNetwork
           ? SfPdfViewer.network(url) // إذا كان رابط
           : SfPdfViewer.file(File(url)), // إذا كان ملف من الجهاز
