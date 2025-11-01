@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:cloudinary_flutter/cloudinary_object.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,10 +10,13 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:ramla_school/core/services/bloc_observer.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
+import 'package:ramla_school/core/services/firebase_notifications_services.dart';
+import 'package:ramla_school/core/services/notifications_services.dart';
 import 'package:ramla_school/screens/analytics/data/admin_analytics_cubit.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
 import 'package:ramla_school/screens/home/data/user_cubit.dart';
+import 'package:ramla_school/screens/news/data/news_cubit.dart';
 import 'package:ramla_school/screens/settings/data/admin_settings_cubit.dart';
 import 'package:ramla_school/screens/splash.dart';
 import 'package:ramla_school/screens/timetable/data/admin/admin_time_table_cubit.dart';
@@ -20,9 +24,13 @@ import 'package:ramla_school/screens/timetable/data/student/student_time_table_c
 import 'package:ramla_school/screens/timetable/data/teacher/teacher_time_table_cubit.dart';
 import 'firebase_options.dart';
 
+late CloudinaryObject cloudinary;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  AccessTokenFirebase.getAccessToken();
+  cloudinary = CloudinaryObject.fromCloudName(cloudName: 'dl0wayiab');
   await initializeDateFormatting('ar');
   Bloc.observer = MyBlocObserver();
   await CacheHelper.init();
@@ -49,6 +57,10 @@ Future<void> main() async {
     }
   }
 
+  // Firebase Messaging token
+  fcmDeviceToken = await NotificationService().getToken() ?? '';
+  accessToken = await AccessTokenFirebase.getAccessToken();
+
   runApp(const MyApp());
 }
 
@@ -62,6 +74,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SignupCubit()),
         BlocProvider(create: (_) => LoginCubit()),
         BlocProvider(create: (_) => UserCubit()),
+        BlocProvider(create: (_) => NewsCubit()),
         BlocProvider(create: (_) => AdminAnalyticsCubit()),
         BlocProvider(create: (_) => AdminSettingsCubit()),
         BlocProvider(create: (_) => AdminTimetableCubit()),

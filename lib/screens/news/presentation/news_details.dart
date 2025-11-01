@@ -117,8 +117,63 @@ class NewsDetailsScreen extends StatelessWidget {
       );
     }
 
+    // 💡 ملاحظة: يجب أن تكون لديك قائمة الصور (news.images) متاحة هنا.
+    // نفترض أن هذا الجزء يتم استخدامه داخل NewsCardWidget مثلاً
+
+    if (news.images.isEmpty) {
+      return const SizedBox.shrink(); // لا يوجد شيء للعرض
+    }
+
+    // ⭐️ الحالة الأولى: صورة واحدة فقط (عرض كامل)
+    if (news.images.length == 1) {
+      final imageUrl = news.images.first;
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: AspectRatio(
+            // يمكنك تعديل نسبة العرض إلى الارتفاع هنا حسب الحاجة (مثل 16/9 أو 16/10)
+            aspectRatio: 16 / 10,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              // تضمين loadingBuilder و errorBuilder
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: dividerColor,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                          : null,
+                      strokeWidth: 2,
+                      color: primaryGreen,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                log("Error loading image: $error");
+                return Container(
+                  color: dividerColor,
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: offlineIndicator,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ⭐️ الحالة الثانية: أكثر من صورة واحدة (عرض أفقي)
     return SizedBox(
-      height: 220, // Define a height for the image area
+      height: 220, // تحديد ارتفاع منطقة الصور
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: news.images.length,
@@ -126,19 +181,20 @@ class NewsDetailsScreen extends StatelessWidget {
           final imageUrl = news.images[index];
           return Padding(
             padding: EdgeInsets.only(
-              right: index == 0 ? 16.0 : 8.0, // Start padding
-              left: index == news.images.length - 1 ? 16.0 : 8.0, // End padding
+              // 💡 هنا تم تعديل الـ Padding ليناسب العرض داخل ListView
+              right: index == news.images.length - 1 ? 16.0 : 8.0,
+              left: index == 0 ? 16.0 : 8.0,
               top: 8.0,
               bottom: 8.0,
             ),
             child: AspectRatio(
-              aspectRatio: 16 / 10, // Adjust aspect ratio as needed
+              aspectRatio: 16 / 10, // نسبة العرض إلى الارتفاع للصور المتعددة
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
-                  // Add loading and error builders for robustness
+                  // تضمين loadingBuilder و errorBuilder
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
@@ -156,7 +212,7 @@ class NewsDetailsScreen extends StatelessWidget {
                     );
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    log("Error loading image: $error"); // Log error
+                    log("Error loading image: $error");
                     return Container(
                       color: dividerColor,
                       child: const Icon(

@@ -1,4 +1,5 @@
 class NewsModel {
+  final String id; // Firestore document ID
   final String title;
   final String category;
   final String description;
@@ -6,12 +7,32 @@ class NewsModel {
   final List<String> images;
 
   NewsModel({
+    this.id = '', // default empty
     required this.title,
     required this.category,
     required this.description,
     required this.createdAt,
     required this.images,
   });
+
+  /// Create a copy of this NewsModel with optional new values
+  NewsModel copyWith({
+    String? id,
+    String? title,
+    String? category,
+    String? description,
+    DateTime? createdAt,
+    List<String>? images,
+  }) {
+    return NewsModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      category: category ?? this.category,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      images: images ?? List<String>.from(this.images),
+    );
+  }
 
   // Factory constructor for converting from JSON (useful for APIs/Firebase)
   factory NewsModel.fromJson(Map<String, dynamic> json) {

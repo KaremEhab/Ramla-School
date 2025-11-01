@@ -181,6 +181,8 @@ final Map<SchoolSubject, Color> subjectColors = {
 
 UserRole? currentRole;
 UserModel? currentUser;
+String? fcmDeviceToken;
+late String accessToken;
 
 UserRole? userRoleFromString(String? role) {
   if (role == null) return null;

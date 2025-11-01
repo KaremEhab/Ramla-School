@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconly/iconly.dart';
@@ -33,6 +35,8 @@ class _LayoutScreenState extends State<LayoutScreen> {
   @override
   void initState() {
     super.initState();
+    log("---------- accessToken: $accessToken ----------");
+    log("---------- fcmDeviceToken: $fcmDeviceToken ----------");
     _pageController = PageController(initialPage: _currentIndex);
     _setupNavigationForRole(currentRole ?? UserRole.teacher);
   }
@@ -164,10 +168,10 @@ class _LayoutScreenState extends State<LayoutScreen> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
+          backgroundColor: screenBg,
           selectedItemColor: primaryGreen,
           unselectedItemColor: iconGrey,
-          elevation: 0,
+          elevation: 1,
           items: _navBarItems,
         ),
       ),
