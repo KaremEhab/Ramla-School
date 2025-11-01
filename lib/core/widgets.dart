@@ -349,9 +349,9 @@ class __AddNewsModalState extends State<AddNewsModal> {
       // هنا لا تحتاج لـ SnackBar، لأن الـ Cubit سيطلق حالة Error
       // ويجب أن يكون لديك BlocListener يراقب هذه الحالة ويعرض SnackBar.
     } finally {
-      // setState(() {
-      //   _isUploading = false;
-      // });
+      setState(() {
+        //   _isUploading = false;
+      });
     }
   }
 
