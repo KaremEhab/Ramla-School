@@ -98,6 +98,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       status: UserStatus.online, // Using enum
       gender: Gender.female, // Using enum
+      grades: [6],
       createdAt: DateTime.now().subtract(const Duration(days: 10)),
       // Use your actual LessonModel now
       subjects: [SchoolSubject.islamic],
@@ -111,6 +112,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       status: UserStatus.offline,
       gender: Gender.female,
+      grades: [6],
       createdAt: DateTime.now().subtract(const Duration(days: 20)),
       subjects: [SchoolSubject.arabic],
     ),
@@ -123,6 +125,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       status: UserStatus.offline,
       gender: Gender.female,
+      grades: [6],
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
       subjects: [SchoolSubject.english],
     ),
@@ -135,6 +138,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           'https://www.clipartmax.com/png/middle/144-1448593_avatar-icon-teacher-avatar.png',
       status: UserStatus.offline,
       gender: Gender.female,
+      grades: [6],
       createdAt: DateTime.now().subtract(const Duration(days: 40)),
       subjects: [SchoolSubject.math],
     ),

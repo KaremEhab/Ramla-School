@@ -47,6 +47,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
         imageUrl: 'https://placehold.co/80x80/A0D9A4/333333?text=T1',
         status: UserStatus.online,
         gender: Gender.male,
+        grades: [6],
         createdAt: DateTime.now(),
         subjects: [SchoolSubject.math],
       ),
@@ -113,8 +114,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                       role == UserRole.teacher
                           ? 'إضافة معلم جديد'
                           : role == UserRole.student
-                              ? 'إضافة طالب جديد'
-                              : 'إضافة مسؤول جديد',
+                          ? 'إضافة طالب جديد'
+                          : 'إضافة مسؤول جديد',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -177,8 +178,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text(
                         'إنشاء الحساب',
-                        style:
-                            TextStyle(color: Colors.white, fontFamily: 'Tajawal'),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Tajawal',
+                        ),
                       ),
                       onPressed: () {
                         final id = Random().nextInt(1000).toString();
@@ -195,6 +198,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
                                 imageUrl: '',
                                 status: UserStatus.online,
                                 gender: gender.value,
+                                grades: [6],
                                 createdAt: now,
                                 subjects: [SchoolSubject.math],
                               ),
@@ -306,9 +310,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
           indicatorColor: primaryGreen,
           indicatorWeight: 3.0,
           labelStyle: const TextStyle(
-              fontFamily: 'Tajawal', fontWeight: FontWeight.bold, fontSize: 16),
+            fontFamily: 'Tajawal',
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
           unselectedLabelStyle: const TextStyle(
-              fontFamily: 'Tajawal', fontWeight: FontWeight.normal, fontSize: 16),
+            fontFamily: 'Tajawal',
+            fontWeight: FontWeight.normal,
+            fontSize: 16,
+          ),
           tabs: const [
             Tab(text: 'المعلمين'),
             Tab(text: 'الطلاب'),
@@ -355,7 +365,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen>
         backgroundColor: primaryGreen,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.admin_panel_settings_outlined),
-        label: const Text('إضافة مسؤول', style: TextStyle(fontFamily: 'Tajawal')),
+        label: const Text(
+          'إضافة مسؤول',
+          style: TextStyle(fontFamily: 'Tajawal'),
+        ),
       ),
     );
   }
@@ -384,7 +397,10 @@ class _UserListSection<T> extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_circle_outline),
-            label: Text(addLabel, style: const TextStyle(fontFamily: 'Tajawal')),
+            label: Text(
+              addLabel,
+              style: const TextStyle(fontFamily: 'Tajawal'),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: _AdminSettingsScreenState.primaryGreen,
               foregroundColor: Colors.white,
@@ -407,8 +423,10 @@ class _UserListSection<T> extends StatelessWidget {
                   ),
                 )
               : ListView.separated(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   itemCount: users.length,
                   itemBuilder: (context, i) => itemBuilder(users[i]),
                   separatorBuilder: (context, i) => const SizedBox(height: 12),
@@ -442,9 +460,10 @@ class _UserCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.grey.withOpacity(0.08),
-              blurRadius: 6,
-              offset: const Offset(0, 2))
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -459,29 +478,40 @@ class _UserCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: const TextStyle(
-                        fontFamily: 'Tajawal',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15)),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle,
-                    style: const TextStyle(
-                        fontFamily: 'Tajawal',
-                        color: _AdminSettingsScreenState.secondaryText,
-                        fontSize: 13)),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    color: _AdminSettingsScreenState.secondaryText,
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(date,
-                    style: const TextStyle(
-                        fontFamily: 'Tajawal',
-                        color: Colors.grey,
-                        fontSize: 11)),
+                Text(
+                  date,
+                  style: const TextStyle(
+                    fontFamily: 'Tajawal',
+                    color: Colors.grey,
+                    fontSize: 11,
+                  ),
+                ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline,
-                color: _AdminSettingsScreenState.deleteRed),
+            icon: const Icon(
+              Icons.delete_outline,
+              color: _AdminSettingsScreenState.deleteRed,
+            ),
             onPressed: onDelete,
           ),
         ],

@@ -6,6 +6,7 @@ import 'package:ramla_school/core/models/users/user_model.dart';
 class TeacherModel extends UserModel {
   final List<SchoolSubject> subjects;
   final String? _fullName;
+  final List<int> grades; // ✅ Now it's plural
 
   const TeacherModel({
     required super.id,
@@ -17,27 +18,22 @@ class TeacherModel extends UserModel {
     required super.gender,
     required super.createdAt,
     required this.subjects,
+    required this.grades, // ✅ plural
     String? fullName,
   }) : _fullName = fullName,
        super(role: UserRole.teacher);
 
   /// Computed full name (uses provided fullName if any)
+  @override
   String get fullName => _fullName ?? '$firstName $lastName';
 
   @override
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'imageUrl': imageUrl,
-      'role': role.name,
-      'status': status.name,
-      'gender': gender.name,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'subjects': subjects.map((s) => s.name).toList(), // ✅ store enum names
+      ...super.toMap(),
+      'subjects': subjects.map((s) => s.name).toList(), // ✅ enum names
       'fullName': fullName,
+      'grades': grades, // ✅ plural and saved as list<int>
     };
   }
 
@@ -48,12 +44,26 @@ class TeacherModel extends UserModel {
       lastName: map['lastName'] ?? '',
       email: map['email'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
+      grades: (map['grades'] as List<dynamic>? ?? [])
+          .map((g) => g is int ? g : int.tryParse(g.toString()) ?? 0)
+          .toList(), // ✅ safely parse list<int>
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: (() {
+        final value = map['createdAt'];
+        if (value is Timestamp) return value.toDate();
+        if (value is String) {
+          try {
+            return DateTime.parse(value);
+          } catch (_) {
+            return DateTime.now();
+          }
+        }
+        return DateTime.now();
+      })(),
       subjects: (map['subjects'] as List<dynamic>? ?? [])
           .map((s) => SchoolSubject.fromString(s.toString()))
-          .toList(), // ✅ convert back from string
+          .toList(),
       fullName: map['fullName'],
     );
   }
@@ -67,6 +77,7 @@ class TeacherModel extends UserModel {
     String? imageUrl,
     UserRole? role,
     UserStatus? status,
+    List<int>? grades,
     Gender? gender,
     DateTime? createdAt,
     List<SchoolSubject>? subjects,
@@ -79,6 +90,7 @@ class TeacherModel extends UserModel {
       email: email ?? this.email,
       imageUrl: imageUrl ?? this.imageUrl,
       status: status ?? this.status,
+      grades: grades ?? this.grades, // ✅ fixed naming
       gender: gender ?? this.gender,
       createdAt: createdAt ?? this.createdAt,
       subjects: subjects ?? this.subjects,

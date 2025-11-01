@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/core/models/notifications_model.dart';
 import 'package:ramla_school/core/models/subject_model.dart';
+import 'package:ramla_school/core/models/users/user_model.dart';
 
 enum UserRole {
   student,
@@ -161,6 +162,21 @@ final Map<SchoolSubject, Color> subjectColors = {
 };
 
 UserRole? currentRole;
+UserModel? currentUser;
+
+UserRole? userRoleFromString(String? role) {
+  if (role == null) return null;
+  switch (role) {
+    case 'admin':
+      return UserRole.admin;
+    case 'teacher':
+      return UserRole.teacher;
+    case 'student':
+      return UserRole.student;
+    default:
+      return null;
+  }
+}
 
 String getRoleNameInArabic(UserRole role) {
   switch (role) {
@@ -169,7 +185,7 @@ String getRoleNameInArabic(UserRole role) {
     case UserRole.teacher:
       return 'أستاذة';
     default:
-      return 'غير محدد';
+      return 'مدير';
   }
 }
 

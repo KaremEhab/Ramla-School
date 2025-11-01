@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/admin_model.dart';
@@ -27,7 +28,6 @@ abstract class UserModel extends Equatable {
     required this.createdAt,
   });
 
-  // Helper getter
   String get fullName => '$firstName $lastName';
 
   @override
@@ -43,13 +43,12 @@ abstract class UserModel extends Equatable {
     createdAt,
   ];
 
-  // This factory constructor is the key.
-  // It reads the 'role' from the map and decides which
-  // concrete class to instantiate.
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    // Read the role to decide which model to create
-    final role = UserRole.fromString(map['role']);
+  UserModel copyWithJson(Map<String, dynamic> json) {
+    return UserModel.fromMap(json);
+  }
 
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    final role = UserRole.fromString(map['role']);
     switch (role) {
       case UserRole.student:
         return StudentModel.fromMap(map);
@@ -60,10 +59,20 @@ abstract class UserModel extends Equatable {
     }
   }
 
-  // This method will be implemented by subclasses
-  Map<String, dynamic> toMap();
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'imageUrl': imageUrl,
+      'role': role.name,
+      'status': status.name,
+      'gender': gender.name,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 
-  // This method will also be implemented by subclasses
   UserModel copyWith({
     String? id,
     String? firstName,
@@ -75,4 +84,10 @@ abstract class UserModel extends Equatable {
     Gender? gender,
     DateTime? createdAt,
   });
+
+  // ✅ Add these two helpers
+  String toJsonString() => jsonEncode(toMap());
+
+  static UserModel fromJsonString(String source) =>
+      UserModel.fromMap(jsonDecode(source));
 }

@@ -34,15 +34,7 @@ class StudentModel extends UserModel {
   @override
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'imageUrl': imageUrl,
-      'role': role.name, // Saves enum as string 'student'
-      'status': status.name, // Saves enum as string 'online' or 'offline'
-      'gender': gender.name,
-      'createdAt': Timestamp.fromDate(createdAt),
+      ...super.toMap(),
       // Student-specific fields
       'grade': grade,
       'classNumber': classNumber,
@@ -61,7 +53,19 @@ class StudentModel extends UserModel {
       // 'role' is not needed here, it's set in the constructor
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: (() {
+        final value = map['createdAt'];
+        if (value is Timestamp) return value.toDate();
+        if (value is String) {
+          try {
+            return DateTime.parse(value);
+          } catch (_) {
+            // fallback for Firestore's human-readable date format
+            return DateTime.now();
+          }
+        }
+        return DateTime.now();
+      })(),
       grade: map['grade'] ?? 1,
       classNumber: map['classNumber'] ?? 1,
     );

@@ -99,7 +99,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
           entries: t.lessons.map((l) {
             if (l.isBreak) {
               return BreakEntry(
-                title: (l.isBreak ? l.breakTitle : ''),
+                title: (l.isBreak ? l.breakTitle ?? '' : ''),
                 startTime: DateFormat('hh:mm a').format(l.startTime.toDate()),
                 endTime: DateFormat('hh:mm a').format(l.endTime.toDate()),
               );

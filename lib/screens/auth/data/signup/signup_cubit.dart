@@ -28,6 +28,7 @@ class SignupCubit extends Cubit<SignupState> {
     String? imageUrl,
     Gender gender = Gender.female,
     List<SchoolSubject>? subjects,
+    List<int>? grades,
     int? grade,
     int? classNumber,
   }) async {
@@ -71,6 +72,7 @@ class SignupCubit extends Cubit<SignupState> {
             gender: gender,
             createdAt: now,
             subjects: subjects ?? [],
+            grades: grades ?? [6],
           );
           break;
 
@@ -84,14 +86,18 @@ class SignupCubit extends Cubit<SignupState> {
             status: UserStatus.online,
             gender: gender,
             createdAt: now,
-            grade: grade ?? 1,
+            grade: grade ?? 6,
             classNumber: classNumber ?? 1,
           );
           break;
       }
 
-      // 3️⃣ Store user data in Firestore
-      await _firestore.collection('users').doc(uid).set(userModel.toMap());
+      // 3️⃣ Save to correct collection
+      final collectionName = role == UserRole.admin ? 'admins' : 'users';
+      await _firestore
+          .collection(collectionName)
+          .doc(uid)
+          .set(userModel.toMap());
 
       emit(SignupSuccess(userModel));
     } on FirebaseAuthException catch (e) {

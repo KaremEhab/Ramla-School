@@ -1,8 +1,6 @@
 part of 'login_cubit.dart';
 
 abstract class LoginState extends Equatable {
-  const LoginState();
-
   @override
   List<Object?> get props => [];
 }
@@ -13,16 +11,16 @@ class LoginLoading extends LoginState {}
 
 class LoginSuccess extends LoginState {
   final UserModel user;
-  const LoginSuccess(this.user);
+  LoginSuccess(this.user);
 
   @override
   List<Object?> get props => [user];
 }
 
 class LoginFailure extends LoginState {
-  final String error;
-  const LoginFailure(this.error);
+  final String message;
+  LoginFailure(this.message);
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [message];
 }

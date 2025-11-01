@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
@@ -24,6 +25,13 @@ class CacheHelper {
     }
 
     throw Exception("Unsupported value type for key: $key");
+  }
+
+  static Future<void> cacheUserData(UserModel user, String role) async {
+    // Example using SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('currentUser', user.toJsonString());
+    await prefs.setString('currentRole', role);
   }
 
   static dynamic getData({

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/news_model.dart';
 import 'package:ramla_school/core/models/users/admin_model.dart';
@@ -6,6 +7,8 @@ import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:ramla_school/core/widgets.dart';
+import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
+import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/presentation/login.dart';
 import 'package:ramla_school/screens/news/presentation/news.dart';
 import 'package:ramla_school/screens/notifications/presentation/notifications.dart';
@@ -190,50 +193,7 @@ class Home extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      _showProfilePopup(
-                        context,
-                        currentRole == UserRole.admin
-                            ? AdminModel(
-                                id: "AD-001",
-                                firstName: "كريم",
-                                lastName: "ايهاب",
-                                email: "admin@ramla.com",
-                                imageUrl:
-                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                status: UserStatus.online,
-                                gender: Gender.male,
-                                createdAt: DateTime.now(),
-                              )
-                            : currentRole == UserRole.teacher
-                            ? TeacherModel(
-                                id: "T-001",
-                                firstName: "أ. سارة",
-                                lastName: "علاء",
-                                email: "sara@example.com",
-                                imageUrl:
-                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                status: UserStatus.online,
-                                gender: Gender.female,
-                                createdAt: DateTime.now(),
-                                subjects: [
-                                  SchoolSubject.computer,
-                                  SchoolSubject.science,
-                                ],
-                              )
-                            : StudentModel(
-                                id: "ST-001",
-                                firstName: "ندى",
-                                lastName: "محمد",
-                                email: "nada@example.com",
-                                imageUrl:
-                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                status: UserStatus.online,
-                                gender: Gender.female,
-                                createdAt: DateTime.now(),
-                                grade: 6,
-                                classNumber: 2,
-                              ),
-                      );
+                      _showProfilePopup(context, currentUser!);
                     },
                     child: CircleAvatar(
                       radius: 24,
@@ -245,15 +205,17 @@ class Home extends StatelessWidget {
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'مرحباً',
                         style: TextStyle(color: secondaryText, fontSize: 14),
                       ),
                       Text(
-                        'كريم ايهاب',
+                        currentRole == UserRole.teacher
+                            ? "أ. ${currentUser?.fullName}"
+                            : currentUser?.fullName ?? 'Unknown User',
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: primaryText,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -434,37 +396,45 @@ class Home extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // زر تسجيل الخروج
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Login()),
-                        (context) => false,
-                      ),
-                      style:
-                          OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: BorderSide(
-                              color: Home.primaryRed,
-                              width: 1.8,
+                  BlocListener<LoginCubit, LoginState>(
+                    listener: (context, state) {
+                      if (state is LoginInitial) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const Login()),
+                          (route) => false,
+                        );
+                      }
+                    },
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          context.read<LoginCubit>().logout();
+                        },
+                        style:
+                            OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(
+                                color: Home.primaryRed,
+                                width: 1.8,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              foregroundColor: Home.primaryRed,
+                              backgroundColor: Colors.transparent,
+                            ).copyWith(
+                              overlayColor: MaterialStateProperty.all(
+                                Home.primaryRed.withOpacity(0.1),
+                              ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            foregroundColor: Home.primaryRed,
-                            backgroundColor: Colors.transparent,
-                          ).copyWith(
-                            overlayColor: MaterialStateProperty.all(
-                              Home.primaryRed.withOpacity(0.1),
-                            ),
-                          ),
 
-                      child: const Text(
-                        'تسجيل الخروج',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        child: const Text(
+                          'تسجيل الخروج',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -505,7 +475,7 @@ class Home extends StatelessWidget {
 
   // عرض بيانات خاصة حسب نوع المستخدم
   Widget _buildRoleSpecificInfo(UserModel user) {
-    if (user.role == UserRole.student && user is StudentModel) {
+    if (user is StudentModel) {
       return Column(
         children: [
           Row(
@@ -545,7 +515,7 @@ class Home extends StatelessWidget {
           ),
         ],
       );
-    } else if (user.role == UserRole.teacher && user is TeacherModel) {
+    } else if (user is TeacherModel) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -559,6 +529,24 @@ class Home extends StatelessWidget {
               ),
               Text(
                 '${user.subjects.isNotEmpty ? user.subjects.length : 0}',
+                style: const TextStyle(
+                  color: Home.primaryText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'الصف:',
+                style: TextStyle(color: Home.secondaryText, fontSize: 15),
+              ),
+              Text(
+                user.grades.join(' - '),
                 style: const TextStyle(
                   color: Home.primaryText,
                   fontWeight: FontWeight.w600,
@@ -624,7 +612,7 @@ class Home extends StatelessWidget {
             ),
         ],
       );
-    } else if (user.role == UserRole.admin && user is AdminModel) {
+    } else if (user is AdminModel) {
       return const Center(
         child: Text(
           'مدير النظام',

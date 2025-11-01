@@ -3,9 +3,6 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 
 class AdminModel extends UserModel {
-  // You can add admin-specific fields here later
-  // e.g., final String permissionsLevel;
-
   const AdminModel({
     required super.id,
     required super.firstName,
@@ -15,7 +12,7 @@ class AdminModel extends UserModel {
     required super.status,
     required super.gender,
     required super.createdAt,
-  }) : super(role: UserRole.admin); // Role is fixed
+  }) : super(role: UserRole.admin);
 
   @override
   Map<String, dynamic> toMap() {
@@ -25,15 +22,13 @@ class AdminModel extends UserModel {
       'lastName': lastName,
       'email': email,
       'imageUrl': imageUrl,
-      'role': role.name, // Saves enum as string 'admin'
+      'role': role.name,
       'status': status.name,
       'gender': gender.name,
-      'createdAt': Timestamp.fromDate(createdAt),
+      'createdAt': createdAt.toIso8601String(), // ✅ FIXED
     };
   }
 
-  // ** THE FIX IS HERE **
-  // Removed the 'role' parameter from this factory
   factory AdminModel.fromMap(Map<String, dynamic> map) {
     return AdminModel(
       id: map['id'] ?? '',
@@ -41,10 +36,21 @@ class AdminModel extends UserModel {
       lastName: map['lastName'] ?? '',
       email: map['email'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
-      // 'role' is not needed here, it's set in the constructor
       status: UserStatus.fromString(map['status']),
       gender: Gender.fromString(map['gender']),
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: (() {
+        final value = map['createdAt'];
+        if (value is Timestamp) return value.toDate();
+        if (value is String) {
+          try {
+            return DateTime.parse(value);
+          } catch (_) {
+            // fallback for Firestore's human-readable date format
+            return DateTime.now();
+          }
+        }
+        return DateTime.now();
+      })(),
     );
   }
 
