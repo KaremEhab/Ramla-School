@@ -8,6 +8,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/user_model.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
+import 'package:ramla_school/screens/analytics/data/admin_analytics_cubit.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
 import 'package:ramla_school/screens/home/data/user_cubit.dart';
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SignupCubit()),
         BlocProvider(create: (_) => LoginCubit()),
         BlocProvider(create: (_) => UserCubit()),
+        BlocProvider(create: (_) => AdminAnalyticsCubit()),
         BlocProvider(create: (_) => AdminSettingsCubit()),
         BlocProvider(create: (_) => AdminTimetableCubit()),
         BlocProvider(create: (_) => TeacherTimetableCubit()),
