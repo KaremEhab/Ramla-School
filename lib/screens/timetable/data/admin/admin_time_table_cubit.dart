@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ramla_school/core/models/timetable_model.dart';
+import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
 import 'package:ramla_school/core/app/constants.dart';
 
@@ -79,6 +80,23 @@ class AdminTimetableCubit extends Cubit<AdminTimetableState> {
 
       return query.docs
           .map((doc) => TeacherModel.fromMap({...doc.data(), 'id': doc.id}))
+          .toList();
+    } catch (e) {
+      emit(AdminTimetableError("Error fetching teachers: $e"));
+      return [];
+    }
+  }
+
+  /// ✅ Fetch all teachers from Firestore
+  Future<List<StudentModel>> fetchAllStudents() async {
+    try {
+      final query = await _firestore
+          .collection('users')
+          .where('role', isEqualTo: UserRole.student.name)
+          .get();
+
+      return query.docs
+          .map((doc) => StudentModel.fromMap({...doc.data(), 'id': doc.id}))
           .toList();
     } catch (e) {
       emit(AdminTimetableError("Error fetching teachers: $e"));

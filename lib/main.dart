@@ -11,6 +11,7 @@ import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/screens/auth/data/login/login_cubit.dart';
 import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
 import 'package:ramla_school/screens/home/data/user_cubit.dart';
+import 'package:ramla_school/screens/settings/data/admin_settings_cubit.dart';
 import 'package:ramla_school/screens/splash.dart';
 import 'package:ramla_school/screens/timetable/data/admin/admin_time_table_cubit.dart';
 import 'package:ramla_school/screens/timetable/data/student/student_time_table_cubit.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SignupCubit()),
         BlocProvider(create: (_) => LoginCubit()),
         BlocProvider(create: (_) => UserCubit()),
+        BlocProvider(create: (_) => AdminSettingsCubit()),
         BlocProvider(create: (_) => AdminTimetableCubit()),
         BlocProvider(create: (_) => TeacherTimetableCubit()),
         BlocProvider(create: (_) => StudentTimetableCubit()),

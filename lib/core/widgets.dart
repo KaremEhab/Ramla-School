@@ -100,3 +100,93 @@ class NewsCardWidget extends StatelessWidget {
   static const Color primaryText = Color(0xFF333333);
   static const Color accentOrange = Color(0xFFF39C12);
 }
+
+class CustomTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final String? validatorMsg;
+  final bool isPassword;
+  final bool isConfirm;
+  final bool isDropdown;
+  final TextInputType keyboardType;
+  final String? Function(String?)? extraValidator;
+
+  const CustomTextField({
+    super.key,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    this.validatorMsg,
+    this.isPassword = false,
+    this.isConfirm = false,
+    this.isDropdown = false,
+    this.keyboardType = TextInputType.text,
+    this.extraValidator,
+  });
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      obscureText: _obscureText,
+      keyboardType: widget.keyboardType,
+      decoration: _buildInputDecoration(),
+      validator: (value) {
+        if (widget.validatorMsg != null && (value == null || value.isEmpty)) {
+          return widget.validatorMsg;
+        }
+        if (widget.extraValidator != null) return widget.extraValidator!(value);
+        return null;
+      },
+    );
+  }
+
+  InputDecoration _buildInputDecoration() {
+    return InputDecoration(
+      hintText: widget.hint,
+      hintStyle: const TextStyle(color: Colors.grey),
+      filled: true,
+      fillColor: Colors.grey.shade100,
+      prefixIcon: widget.isDropdown
+          ? null
+          : Icon(widget.icon, color: Colors.grey),
+      suffixIcon: widget.isPassword
+          ? IconButton(
+              icon: Icon(
+                _obscureText
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            )
+          : (widget.isDropdown ? Icon(widget.icon, color: Colors.grey) : null),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.green),
+      ),
+    );
+  }
+}

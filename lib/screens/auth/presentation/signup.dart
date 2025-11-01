@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/core/utils.dart';
+import 'package:ramla_school/core/widgets.dart';
 import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
 import 'package:ramla_school/screens/layout.dart';
 
@@ -168,14 +169,14 @@ class _SignupState extends State<Signup> {
                                 ),
                               ),
                               const SizedBox(height: 32),
-                              _buildTextField(
+                              CustomTextField(
                                 controller: _firstNameController,
                                 hint: 'اسمك',
                                 icon: Icons.person_outline,
                                 validatorMsg: 'الرجاء إدخال اسمك بشكل صحيح',
                               ),
                               const SizedBox(height: 20),
-                              _buildTextField(
+                              CustomTextField(
                                 controller: _lastNameController,
                                 hint: 'اسم العائلة',
                                 icon: Icons.person_outline,
@@ -183,7 +184,7 @@ class _SignupState extends State<Signup> {
                                     'الرجاء إدخال اسم العائلة بشكل صحيح',
                               ),
                               const SizedBox(height: 20),
-                              _buildTextField(
+                              CustomTextField(
                                 controller: _emailController,
                                 hint: 'البريد الالكتروني',
                                 icon: Icons.email_outlined,
@@ -239,7 +240,7 @@ class _SignupState extends State<Signup> {
 
                               // Class number (students only)
                               if (_selectedRole == UserRole.student)
-                                _buildTextField(
+                                CustomTextField(
                                   controller: _classNumberController,
                                   hint: 'الفصل الدراسي',
                                   icon: Icons.class_,
@@ -259,37 +260,23 @@ class _SignupState extends State<Signup> {
                               const SizedBox(height: 20),
 
                               // Password
-                              _buildTextField(
+                              CustomTextField(
                                 controller: _passwordController,
                                 hint: 'كلمة السر',
                                 icon: Icons.lock_outline,
                                 isPassword: true,
-                                obscureText: _isPasswordObscured,
-                                toggleObscure: () {
-                                  setState(
-                                    () => _isPasswordObscured =
-                                        !_isPasswordObscured,
-                                  );
-                                },
                                 validatorMsg:
                                     'كلمة السر يجب أن تكون 6 أحرف على الأقل',
                               ),
                               const SizedBox(height: 20),
 
                               // Confirm Password
-                              _buildTextField(
+                              CustomTextField(
                                 controller: _confirmPasswordController,
                                 hint: 'تأكيد كلمة السر',
                                 icon: Icons.lock_outline,
                                 isPassword: true,
                                 isConfirm: true,
-                                obscureText: _isConfirmPasswordObscured,
-                                toggleObscure: () {
-                                  setState(
-                                    () => _isConfirmPasswordObscured =
-                                        !_isConfirmPasswordObscured,
-                                  );
-                                },
                                 validatorMsg: 'الرجاء تأكيد كلمة السر',
                                 extraValidator: (value) {
                                   if (value != _passwordController.text) {
@@ -372,40 +359,6 @@ class _SignupState extends State<Signup> {
             ),
           ),
         );
-      },
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    String? validatorMsg,
-    bool isPassword = false,
-    bool isConfirm = false,
-    bool isDropdown = false,
-    bool obscureText = false,
-    VoidCallback? toggleObscure,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? extraValidator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      decoration: _buildInputDecoration(
-        hint: hint,
-        icon: icon,
-        isPassword: isPassword,
-        isConfirm: isConfirm,
-        isDropdown: isDropdown,
-      ),
-      validator: (value) {
-        if (validatorMsg != null && (value == null || value.isEmpty)) {
-          return validatorMsg;
-        }
-        if (extraValidator != null) return extraValidator(value);
-        return null;
       },
     );
   }
