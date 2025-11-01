@@ -10,7 +10,6 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/lesson_model.dart';
 import 'package:ramla_school/core/models/timetable_model.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
-import 'package:ramla_school/screens/home/presentation/home.dart';
 import 'package:ramla_school/screens/timetable/data/admin/admin_time_table_cubit.dart';
 
 class AdminTimetablePage extends StatefulWidget {
