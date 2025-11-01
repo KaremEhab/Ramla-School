@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -11,21 +13,31 @@ class StudentTimetableCubit extends Cubit<StudentTimetableState> {
 
   StudentTimetableCubit() : super(StudentTimetableInitial());
 
-  Future<void> fetchStudentTimetable(Grade grade, int classNumber) async {
+  Future<void> fetchStudentTimetable(int grade, int classNumber) async {
     emit(StudentTimetableLoading());
     try {
-      final query = await _firestore
+      // Query all timetables for this grade and classNumber
+      final querySnapshot = await _firestore
           .collection('timetables')
-          .where('grade', isEqualTo: grade.label)
+          .where('grade', isEqualTo: grade)
           .where('classNumber', isEqualTo: classNumber)
+          .orderBy('date') // Optional: sort by date
           .get();
 
-      final timetables = query.docs
-          .map((doc) => TimetableModel.fromMap({...doc.data(), 'id': doc.id}))
-          .toList();
+      if (querySnapshot.docs.isNotEmpty) {
+        log('Found ${querySnapshot.docs.length} documents.');
 
-      emit(StudentTimetableLoaded(timetables));
+        final timetables = querySnapshot.docs.map((doc) {
+          return TimetableModel.fromMap({...doc.data(), 'id': doc.id});
+        }).toList();
+
+        emit(StudentTimetableLoaded(timetables));
+      } else {
+        log('No timetables found for grade $grade, class $classNumber.');
+        emit(StudentTimetableLoaded([]));
+      }
     } catch (e) {
+      log('Error fetching timetables: $e');
       emit(StudentTimetableError("Error fetching student timetable: $e"));
     }
   }

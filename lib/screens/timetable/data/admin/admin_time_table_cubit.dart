@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -26,6 +28,7 @@ class AdminTimetableCubit extends Cubit<AdminTimetableState> {
   }
 
   Future<void> fetchTimetables(Grade grade, int classNumber) async {
+    log('Fetching timetables for Grade: ${grade.label}, Class: $classNumber');
     emit(AdminTimetableLoading());
     try {
       final query = await _firestore
@@ -34,12 +37,25 @@ class AdminTimetableCubit extends Cubit<AdminTimetableState> {
           .where('classNumber', isEqualTo: classNumber)
           .get();
 
-      final timetables = query.docs
-          .map((doc) => TimetableModel.fromMap({...doc.data(), 'id': doc.id}))
-          .toList();
+      log('Query returned ${query.docs.length} documents.');
+
+      // --- ADDED LOGGING START ---
+      final timetables = query.docs.map((doc) {
+        log('--- Fetched Document ---');
+        log('Document ID: ${doc.id}');
+        log(
+          'Raw Firestore Data: ${doc.data()}',
+        ); // Inspect this for correctness!
+        log('------------------------');
+
+        // Use the safe spread operator for mapping
+        return TimetableModel.fromMap({...doc.data() ?? {}, 'id': doc.id});
+      }).toList();
+      // --- ADDED LOGGING END ---
 
       emit(AdminTimetableLoaded(timetables));
     } catch (e) {
+      log('Error fetching timetables: $e');
       emit(AdminTimetableError("Error fetching timetables: $e"));
     }
   }

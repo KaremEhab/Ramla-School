@@ -1,4 +1,6 @@
 // lesson_model.dart
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/users/teacher_model.dart';
@@ -84,4 +86,54 @@ class LessonModel {
       'documentUrls': documentUrls,
     };
   }
+}
+
+// ------------------- DATA MODELS -------------------
+
+abstract class TimelineEntry {
+  final String startTime;
+  final String endTime;
+  const TimelineEntry({required this.startTime, required this.endTime});
+}
+
+class LessonEntry extends TimelineEntry {
+  final String subject;
+  final String teacher;
+  final String grade;
+  final String classNumber;
+  final int lessonIndex;
+  final String duration;
+  final String? extraInfo;
+  final Color color;
+  final List<String> documentUrls;
+
+  const LessonEntry({
+    required this.subject,
+    required this.teacher,
+    required this.grade,
+    required this.classNumber,
+    required this.lessonIndex,
+    required this.duration,
+    required this.color,
+    this.extraInfo = '',
+    required super.startTime,
+    required super.endTime,
+    this.documentUrls = const [],
+  });
+}
+
+class BreakEntry extends TimelineEntry {
+  final String title;
+  const BreakEntry({
+    required this.title,
+    required super.startTime,
+    required super.endTime,
+  });
+}
+
+class DaySchedule {
+  final DateTime date;
+  final List<TimelineEntry> entries;
+
+  DaySchedule({required this.date, required this.entries});
 }

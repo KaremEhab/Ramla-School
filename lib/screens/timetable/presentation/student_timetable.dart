@@ -1,58 +1,16 @@
+import 'dart:developer';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
-
 import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/models/document_model.dart';
+import 'package:ramla_school/core/models/lesson_model.dart';
+import 'package:ramla_school/core/models/timetable_model.dart';
+import 'package:ramla_school/core/models/users/student_model.dart';
 import 'package:ramla_school/screens/documents/presentation/documents.dart';
-import 'package:ramla_school/screens/timetable/data/fake_student_timetable.dart';
-
-// ------------------- DATA MODELS -------------------
-
-abstract class TimelineEntry {
-  final String startTime;
-  final String endTime;
-  const TimelineEntry({required this.startTime, required this.endTime});
-}
-
-class LessonEntry extends TimelineEntry {
-  final String subject;
-  final String teacher;
-  final String duration;
-  final String? extraInfo;
-  final Color color;
-  final List<String> documentUrls; // 👈 new field
-
-  const LessonEntry({
-    required this.subject,
-    required this.teacher,
-    required this.duration,
-    required this.color,
-    this.extraInfo = '',
-    required super.startTime,
-    required super.endTime,
-    this.documentUrls = const [],
-  });
-}
-
-class BreakEntry extends TimelineEntry {
-  final String title;
-  const BreakEntry({
-    required this.title,
-    required super.startTime,
-    required super.endTime,
-  });
-}
-
-class DaySchedule {
-  final DateTime date;
-  final List<TimelineEntry> entries;
-
-  DaySchedule({required this.date, required this.entries});
-}
-
-// ------------------- MAIN SCREEN -------------------
+import 'package:ramla_school/screens/timetable/data/student/student_time_table_cubit.dart';
 
 class TimetableScreen extends StatefulWidget {
   const TimetableScreen({super.key});
@@ -62,18 +20,15 @@ class TimetableScreen extends StatefulWidget {
 }
 
 class _TimetableScreenState extends State<TimetableScreen> {
-  // ---------------- COLORS ----------------
   static const Color primaryGreen = Color(0xFF5DB075);
   static const Color primaryText = Color(0xFF333333);
   static const Color secondaryText = Color(0xFF666666);
   static const Color unselectedDay = Color(0xFFEEEEEE);
 
-  // ---------------- DAY CARD DIMENSIONS ----------------
   static const double _dayCardWidth = 60.0;
   static const double _dayCardMargin = 4.0;
 
-  // ---------------- STATE VARIABLES ----------------
-  late Map<DateTime, DaySchedule> _allSchedules;
+  Map<DateTime, DaySchedule> _allSchedules = {};
   late DateTime _selectedDate;
   late DateTime _currentDisplayMonth;
   late int _firstLessonYear;
@@ -84,53 +39,24 @@ class _TimetableScreenState extends State<TimetableScreen> {
 
   late ScrollController _dayScrollController;
   late PageController _pageController;
+  List<DateTime> _availableMonths = [];
 
   @override
   void initState() {
     super.initState();
     _dayScrollController = ScrollController();
+    _selectedDate = DateTime.now();
+    _currentDisplayMonth = DateTime(_selectedDate.year, _selectedDate.month);
+    _firstLessonYear = _selectedDate.year;
+    _pageController = PageController();
 
-    // Load mock data
-    final mockList = MockTimetableService.generateOctoberTimetables();
-    _allSchedules = {
-      for (final t in mockList)
-        DateUtils.dateOnly(t.date): DaySchedule(
-          date: t.date,
-          entries: t.lessons.map((l) {
-            if (l.isBreak) {
-              return BreakEntry(
-                title: (l.isBreak ? l.breakTitle ?? '' : ''),
-                startTime: DateFormat('hh:mm a').format(l.startTime.toDate()),
-                endTime: DateFormat('hh:mm a').format(l.endTime.toDate()),
-              );
-            } else {
-              return LessonEntry(
-                subject: l.subject!.name,
-                teacher: l.teacher?.fullName ?? '',
-                duration: '${l.duration} دقيقة',
-                startTime: DateFormat('hh:mm a').format(l.startTime.toDate()),
-                endTime: DateFormat('hh:mm a').format(l.endTime.toDate()),
-                color: Colors
-                    .primaries[Random().nextInt(Colors.primaries.length)]
-                    .shade100,
-                documentUrls: l.documentUrls, // 👈 add this
-              );
-            }
-          }).toList(),
-        ),
-    };
-
-    if (_allSchedules.isEmpty) {
-      _initializeEmptyState();
-    } else {
-      _initializeWithData();
-    }
-
-    _pageController = PageController(
-      initialPage: _daysForCurrentMonth.indexWhere(
-        (d) => DateUtils.isSameDay(d.date, _selectedDate),
-      ),
-    );
+    final user = currentUser as StudentModel;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StudentTimetableCubit>().fetchStudentTimetable(
+        user.grade,
+        user.classNumber,
+      );
+    });
   }
 
   @override
@@ -140,89 +66,22 @@ class _TimetableScreenState extends State<TimetableScreen> {
     super.dispose();
   }
 
-  void _initializeEmptyState() {
-    DateTime now = DateTime.now();
-    _currentDisplayMonth = DateTime(now.year, now.month, 1);
-    _firstLessonYear = now.year;
-    _selectedDate = now;
-    _daysForCurrentMonth = [];
-    _selectedDayTimeline = [];
-    _currentMonthString = DateFormat.MMMM('ar').format(_currentDisplayMonth);
-  }
-
-  void _initializeWithData() {
-    _firstLessonYear = _allSchedules.keys.map((d) => d.year).reduce(min);
-
-    DateTime now = DateTime.now();
-    DateTime initialSelectedDate = now;
-
-    if (now.weekday == DateTime.friday) {
-      initialSelectedDate = now.subtract(const Duration(days: 1));
-    } else if (now.weekday == DateTime.saturday) {
-      initialSelectedDate = now.add(const Duration(days: 1));
-    }
-
-    // Ensure selected date exists in schedule
-    if (_allSchedules.isNotEmpty) {
-      DateTime firstDataDate = _allSchedules.keys.reduce(
-        (a, b) => a.isBefore(b) ? a : b,
-      );
-      if (initialSelectedDate.isBefore(firstDataDate)) {
-        initialSelectedDate = firstDataDate;
-      }
-
-      while (initialSelectedDate.weekday == DateTime.friday ||
-          initialSelectedDate.weekday == DateTime.saturday) {
-        initialSelectedDate = initialSelectedDate.add(const Duration(days: 1));
-        if (initialSelectedDate.isAfter(_allSchedules.keys.last)) {
-          initialSelectedDate = firstDataDate;
-          while (initialSelectedDate.weekday == DateTime.friday ||
-              initialSelectedDate.weekday == DateTime.saturday) {
-            initialSelectedDate = initialSelectedDate.add(
-              const Duration(days: 1),
-            );
-          }
-          break;
-        }
-      }
-    }
-
-    _selectedDate = DateUtils.dateOnly(initialSelectedDate);
-    _currentDisplayMonth = DateTime(
-      initialSelectedDate.year,
-      initialSelectedDate.month,
-      1,
-    );
-
-    // Populate days for the current month and selected day's timeline
-    _updateMonthData(scrollToSelected: true);
-
-    // Initialize the PageController AFTER updating month data
-    int initialPage = _daysForCurrentMonth.indexWhere(
-      (d) => DateUtils.isSameDay(d.date, _selectedDate),
-    );
-    if (initialPage < 0) initialPage = 0;
-
-    _pageController = PageController(initialPage: initialPage);
-  }
-
+  // ---------- DATA UPDATES ----------
   void _updateMonthData({
     bool selectFirstDay = false,
     bool scrollToSelected = false,
   }) {
     setState(() {
       _currentMonthString = DateFormat.MMMM('ar').format(_currentDisplayMonth);
-
-      _daysForCurrentMonth = _allSchedules.values
-          .where(
-            (s) =>
-                s.date.year == _currentDisplayMonth.year &&
-                s.date.month == _currentDisplayMonth.month &&
-                s.entries.isNotEmpty,
-          )
-          .toList();
-
-      _daysForCurrentMonth.sort((a, b) => a.date.compareTo(b.date));
+      _daysForCurrentMonth =
+          _allSchedules.values
+              .where(
+                (s) =>
+                    s.date.year == _currentDisplayMonth.year &&
+                    s.date.month == _currentDisplayMonth.month,
+              )
+              .toList()
+            ..sort((a, b) => a.date.compareTo(b.date));
 
       DateTime targetDate = _selectedDate;
 
@@ -233,12 +92,6 @@ class _TimetableScreenState extends State<TimetableScreen> {
             )) {
           targetDate = _daysForCurrentMonth.first.date;
         }
-      } else {
-        targetDate = DateTime(
-          _currentDisplayMonth.year,
-          _currentDisplayMonth.month,
-          1,
-        );
       }
 
       _selectedDate = DateUtils.dateOnly(targetDate);
@@ -257,146 +110,274 @@ class _TimetableScreenState extends State<TimetableScreen> {
     if (!_dayScrollController.hasClients || _daysForCurrentMonth.isEmpty)
       return;
 
-    int selectedIndex = _daysForCurrentMonth.indexWhere(
+    int index = _daysForCurrentMonth.indexWhere(
       (d) => DateUtils.isSameDay(d.date, _selectedDate),
     );
+    if (index == -1) return;
 
-    if (selectedIndex != -1) {
-      double screenWidth = MediaQuery.of(context).size.width;
-      double cardWidthWithMargin = _dayCardWidth + (_dayCardMargin * 2);
+    double width = MediaQuery.of(context).size.width;
+    double cardWidth = _dayCardWidth + (_dayCardMargin * 2);
+    double targetOffset = (index * cardWidth) + (cardWidth / 2) - (width / 2);
 
-      double targetOffset =
-          (selectedIndex * cardWidthWithMargin) +
-          (cardWidthWithMargin / 2) -
-          (screenWidth / 2);
-
-      targetOffset = targetOffset.clamp(
-        _dayScrollController.position.minScrollExtent,
-        _dayScrollController.position.maxScrollExtent,
-      );
-
-      _dayScrollController.animateTo(
-        targetOffset,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _onDaySelected(DateTime date) {
-    int pageIndex = _daysForCurrentMonth.indexWhere(
-      (d) => DateUtils.isSameDay(d.date, date),
+    targetOffset = targetOffset.clamp(
+      _dayScrollController.position.minScrollExtent,
+      _dayScrollController.position.maxScrollExtent,
     );
 
-    if (pageIndex == -1) return; // safety
-
-    setState(() {
-      _selectedDate = DateUtils.dateOnly(date);
-      _selectedDayTimeline =
-          _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
-    });
-
-    // Animate PageView to that day's page
-    _pageController.animateToPage(
-      pageIndex,
-      duration: const Duration(milliseconds: 300),
+    _dayScrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
   }
 
-  void _onPrevMonth() {
-    if (_currentDisplayMonth.year == _firstLessonYear &&
-        _currentDisplayMonth.month == 1)
-      return;
+  // ---------- MONTH SWITCH ----------
 
-    setState(() {
-      _currentDisplayMonth = DateTime(
-        _currentDisplayMonth.year,
-        _currentDisplayMonth.month - 1,
-        1,
-      );
-    });
-    _updateMonthData(selectFirstDay: true, scrollToSelected: true);
-  }
+  void onPrevMonth() {
+    // ابحث عن أقرب شهر سابق فيه بيانات فعلًا
+    DateTime? prevAvailableMonth = _findAdjacentMonth(isNext: false);
 
-  void _onNextMonth() {
-    if (_allSchedules.isNotEmpty) {
-      DateTime lastDate = _allSchedules.keys.reduce(
-        (a, b) => a.isAfter(b) ? a : b,
-      );
-      if (_currentDisplayMonth.year == lastDate.year &&
-          _currentDisplayMonth.month == lastDate.month)
-        return;
+    if (prevAvailableMonth == null) {
+      log('⚠️ لا يوجد شهر سابق يحتوي على جدول.');
+      return; // لا ننتقل لو مفيش بيانات
     }
 
     setState(() {
-      _currentDisplayMonth = DateTime(
-        _currentDisplayMonth.year,
-        _currentDisplayMonth.month + 1,
-        1,
-      );
+      _currentDisplayMonth = prevAvailableMonth;
     });
-    _updateMonthData(selectFirstDay: true, scrollToSelected: true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateMonthData(scrollToSelected: true);
+      if (_daysForCurrentMonth.isNotEmpty) {
+        setState(() {
+          _selectedDate = _daysForCurrentMonth.last.date;
+          _selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
+        });
+        _pageController.jumpToPage(_daysForCurrentMonth.length - 1);
+        _scrollToSelectedDay();
+      }
+    });
   }
 
+  void onNextMonth() {
+    // ابحث عن أقرب شهر لاحق فيه بيانات فعلًا
+    DateTime? nextAvailableMonth = _findAdjacentMonth(isNext: true);
+
+    if (nextAvailableMonth == null) {
+      log('⚠️ لا يوجد شهر لاحق يحتوي على جدول.');
+      return; // لا ننتقل لو مفيش بيانات
+    }
+
+    setState(() {
+      _currentDisplayMonth = nextAvailableMonth;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateMonthData(scrollToSelected: true);
+      if (_daysForCurrentMonth.isNotEmpty) {
+        setState(() {
+          _selectedDate = _daysForCurrentMonth.first.date;
+          _selectedDayTimeline = _allSchedules[_selectedDate]?.entries ?? [];
+        });
+        _pageController.jumpToPage(0);
+        _scrollToSelectedDay();
+      }
+    });
+  }
+
+  // ---------------------- SWIPE FUNCTIONS ----------------------
+
+  void _onSwipeRight() {
+    int currentIndex = _daysForCurrentMonth.indexWhere(
+      (day) => DateUtils.isSameDay(day.date, _selectedDate),
+    );
+
+    if (currentIndex < _daysForCurrentMonth.length - 1) {
+      _onDaySelected(_daysForCurrentMonth[currentIndex + 1].date);
+    } else {
+      // لو وصلنا لنهاية الشهر، نحاول ننتقل للشهر التالي لو فيه بيانات
+      DateTime? nextAvailableMonth = _findAdjacentMonth(isNext: true);
+      if (nextAvailableMonth != null) onNextMonth();
+    }
+  }
+
+  void _onSwipeLeft() {
+    int currentIndex = _daysForCurrentMonth.indexWhere(
+      (day) => DateUtils.isSameDay(day.date, _selectedDate),
+    );
+
+    if (currentIndex > 0) {
+      _onDaySelected(_daysForCurrentMonth[currentIndex - 1].date);
+    } else {
+      // لو في بداية الشهر، نحاول ننتقل للشهر السابق لو فيه بيانات
+      DateTime? prevAvailableMonth = _findAdjacentMonth(isNext: false);
+      if (prevAvailableMonth != null) onPrevMonth();
+    }
+  }
+
+  // ---------------------- HELPER FUNCTION ----------------------
+
+  // تبحث عن أقرب شهر فيه بيانات سواء التالي أو السابق
+  DateTime? _findAdjacentMonth({required bool isNext}) {
+    if (_allSchedules.isEmpty) return null;
+
+    // استخراج كل الشهور اللي فيها بيانات
+    final availableMonths =
+        _allSchedules.keys
+            .map((d) => DateTime(d.year, d.month))
+            .toSet()
+            .toList()
+          ..sort((a, b) => a.compareTo(b));
+
+    DateTime currentMonth = DateTime(
+      _currentDisplayMonth.year,
+      _currentDisplayMonth.month,
+    );
+
+    if (isNext) {
+      for (final m in availableMonths) {
+        if (m.isAfter(currentMonth)) return m;
+      }
+    } else {
+      for (final m in availableMonths.reversed) {
+        if (m.isBefore(currentMonth)) return m;
+      }
+    }
+
+    return null; // مفيش شهر متاح
+  }
+
+  // ---------- BLOC LISTENER ----------
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildMonthSelector(),
-          const SizedBox(height: 24),
-          _buildDaySelector(),
-          const SizedBox(height: 32),
-          _buildTimeline(),
-        ],
-      ),
-    );
-  }
+    return BlocListener<StudentTimetableCubit, StudentTimetableState>(
+      listener: (context, state) {
+        if (state is StudentTimetableLoaded) {
+          final timetables = state.timetables;
+          _allSchedules = {
+            for (final t in timetables)
+              DateUtils.dateOnly(t.date): DaySchedule(
+                date: t.date,
+                entries: t.lessons.map((l) {
+                  if (l.isBreak) {
+                    return BreakEntry(
+                      title: l.breakTitle ?? '',
+                      startTime: DateFormat(
+                        'hh:mm a',
+                      ).format(l.startTime.toDate()),
+                      endTime: DateFormat('hh:mm a').format(l.endTime.toDate()),
+                    );
+                  } else {
+                    return LessonEntry(
+                      subject: l.subject!.name,
+                      teacher: l.teacher?.fullName ?? '',
+                      grade: t.grade.label ?? 'غير محدد',
+                      classNumber: t.classNumber.toString(),
+                      lessonIndex: t.lessons.indexOf(l) + 1,
+                      duration: '${l.duration} دقيقة',
+                      color: Colors
+                          .primaries[math.Random().nextInt(
+                            Colors.primaries.length,
+                          )]
+                          .shade100,
+                      startTime: DateFormat(
+                        'hh:mm a',
+                      ).format(l.startTime.toDate()),
+                      endTime: DateFormat('hh:mm a').format(l.endTime.toDate()),
+                      documentUrls: l.documentUrls,
+                    );
+                  }
+                }).toList(),
+              ),
+          };
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      automaticallyImplyLeading: false, // 👈 disables the back button
-      backgroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-      title: Text(
-        'الجدول الدراسي ${_currentDisplayMonth.year}',
-        style: const TextStyle(
-          color: _TimetableScreenState.primaryGreen,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+          final uniqueMonths =
+              _allSchedules.keys
+                  .map((d) => DateTime(d.year, d.month))
+                  .toSet()
+                  .toList()
+                ..sort((a, b) => a.compareTo(b));
+          _availableMonths = uniqueMonths;
+          _initializeWithData();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity != null) {
+              if (details.primaryVelocity! < 0) {
+                _onSwipeLeft();
+              } else if (details.primaryVelocity! > 0) {
+                _onSwipeRight();
+              }
+            }
+          },
+          child: Column(
+            children: [
+              _buildMonthSelector(),
+              const SizedBox(height: 24),
+              _buildDaySelector(),
+              const SizedBox(height: 32),
+              _buildTimeline(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMonthSelector() {
-    String prevMonth = DateFormat.MMMM('ar').format(
-      DateTime(_currentDisplayMonth.year, _currentDisplayMonth.month - 1),
+  // ---------- INIT ----------
+  void _initializeWithData() {
+    if (_availableMonths.isEmpty) return;
+    if (!_availableMonths.any(
+      (m) =>
+          m.year == _currentDisplayMonth.year &&
+          m.month == _currentDisplayMonth.month,
+    )) {
+      _currentDisplayMonth = _availableMonths.first;
+    }
+    _selectedDate = _allSchedules.keys.first;
+    _updateMonthData(scrollToSelected: true);
+    int index = _daysForCurrentMonth.indexWhere(
+      (d) => DateUtils.isSameDay(d.date, _selectedDate),
     );
-    String nextMonth = DateFormat.MMMM('ar').format(
-      DateTime(_currentDisplayMonth.year, _currentDisplayMonth.month + 1),
+    if (index < 0) index = 0;
+    _pageController = PageController(initialPage: index);
+  }
+
+  // ---------- UI BUILDERS ----------
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      centerTitle: true,
+      title: Text(
+        'الجدول الدراسي ${_currentDisplayMonth.year}',
+        style: const TextStyle(
+          color: primaryGreen,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+    );
+  }
+
+  Widget _buildMonthSelector() {
+    int currentIndex = _availableMonths.indexWhere(
+      (m) =>
+          m.year == _currentDisplayMonth.year &&
+          m.month == _currentDisplayMonth.month,
     );
 
-    bool canGoBack =
-        !(_currentDisplayMonth.year == _firstLessonYear &&
-            _currentDisplayMonth.month == 1);
-    bool canGoForward = true;
-    if (_allSchedules.isNotEmpty) {
-      DateTime lastDate = _allSchedules.keys.reduce(
-        (a, b) => a.isAfter(b) ? a : b,
-      );
-      canGoForward =
-          !(_currentDisplayMonth.year == lastDate.year &&
-              _currentDisplayMonth.month == lastDate.month);
-    }
+    String currentMonth = DateFormat.MMMM('ar').format(_currentDisplayMonth);
+    String? prevMonth = currentIndex > 0
+        ? DateFormat.MMMM('ar').format(_availableMonths[currentIndex - 1])
+        : null;
+    String? nextMonth = currentIndex < _availableMonths.length - 1
+        ? DateFormat.MMMM('ar').format(_availableMonths[currentIndex + 1])
+        : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -404,17 +385,17 @@ class _TimetableScreenState extends State<TimetableScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _MonthArrow(
-            month: prevMonth,
+            month: prevMonth ?? '',
             icon: Icons.arrow_back,
-            onTap: _onPrevMonth,
-            isVisible: canGoBack,
+            onTap: onPrevMonth,
+            isVisible: prevMonth != null,
           ),
           Row(
             children: [
               const Icon(Icons.calendar_month_outlined, color: primaryText),
               const SizedBox(width: 8),
               Text(
-                _currentMonthString,
+                currentMonth,
                 style: const TextStyle(
                   color: primaryText,
                   fontSize: 22,
@@ -424,10 +405,10 @@ class _TimetableScreenState extends State<TimetableScreen> {
             ],
           ),
           _MonthArrow(
-            month: nextMonth,
+            month: nextMonth ?? '',
             icon: Icons.arrow_forward,
-            onTap: _onNextMonth,
-            isVisible: canGoForward,
+            onTap: onNextMonth,
+            isVisible: nextMonth != null,
           ),
         ],
       ),
@@ -436,19 +417,20 @@ class _TimetableScreenState extends State<TimetableScreen> {
 
   Widget _buildDaySelector() {
     if (_daysForCurrentMonth.isEmpty) {
-      return Container(
+      return const SizedBox(
         height: 80,
-        alignment: Alignment.center,
-        child: const Text(
-          'لا توجد دروس في هذا الشهر',
-          style: TextStyle(color: secondaryText, fontSize: 16),
+        child: Center(
+          child: Text(
+            'لا توجد دروس في هذا الشهر',
+            style: TextStyle(color: secondaryText, fontSize: 16),
+          ),
         ),
       );
     }
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
       controller: _dayScrollController,
+      scrollDirection: Axis.horizontal,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(
@@ -483,25 +465,15 @@ class _TimetableScreenState extends State<TimetableScreen> {
     return Expanded(
       child: PageView.builder(
         controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: _daysForCurrentMonth.length,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedDate = _daysForCurrentMonth[index].date;
-            _selectedDayTimeline = _daysForCurrentMonth[index].entries;
-          });
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _scrollToSelectedDay();
-          });
-        },
         itemBuilder: (context, index) {
-          final dayTimeline = _daysForCurrentMonth[index].entries;
-
+          final entries = _daysForCurrentMonth[index].entries;
           return ListView.builder(
             padding: const EdgeInsets.only(bottom: 20),
-            itemCount: dayTimeline.length,
+            itemCount: entries.length,
             itemBuilder: (context, i) {
-              final entry = dayTimeline[i];
+              final entry = entries[i];
               if (entry is LessonEntry) {
                 return _TimeSlot(
                   time: entry.startTime,
@@ -520,16 +492,28 @@ class _TimetableScreenState extends State<TimetableScreen> {
       ),
     );
   }
+
+  void _onDaySelected(DateTime date) {
+    int idx = _daysForCurrentMonth.indexWhere(
+      (d) => DateUtils.isSameDay(d.date, date),
+    );
+    if (idx == -1) return;
+    setState(() {
+      _selectedDate = DateUtils.dateOnly(date);
+      _selectedDayTimeline =
+          _allSchedules[DateUtils.dateOnly(date)]?.entries ?? [];
+    });
+    _pageController.jumpToPage(idx);
+    _scrollToSelectedDay();
+  }
 }
 
-// ------------------- HELPER WIDGETS -------------------
-
+// ---------- HELPERS ----------
 class _MonthArrow extends StatelessWidget {
   final String month;
   final IconData icon;
   final VoidCallback onTap;
   final bool isVisible;
-
   const _MonthArrow({
     required this.month,
     required this.icon,
@@ -540,7 +524,6 @@ class _MonthArrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isVisible) return const SizedBox(width: 80);
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -575,7 +558,6 @@ class _DayCard extends StatelessWidget {
   final DateTime date;
   final bool isSelected;
   final VoidCallback onTap;
-
   const _DayCard({
     required this.date,
     required this.isSelected,
@@ -586,7 +568,6 @@ class _DayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String dayNumber = DateFormat.d('ar').format(date);
     String dayName = DateFormat.EEEE('ar').format(date);
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -634,7 +615,6 @@ class _DayCard extends StatelessWidget {
 class _TimeSlot extends StatelessWidget {
   final String time;
   final Widget child;
-
   const _TimeSlot({required this.time, required this.child});
 
   @override
@@ -646,16 +626,13 @@ class _TimeSlot extends StatelessWidget {
         children: [
           SizedBox(
             width: 70,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                time,
-                style: const TextStyle(
-                  color: _TimetableScreenState.secondaryText,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.right,
+            child: Text(
+              time,
+              style: const TextStyle(
+                color: _TimetableScreenState.secondaryText,
+                fontSize: 14,
               ),
+              textAlign: TextAlign.right,
             ),
           ),
           Expanded(child: child),
@@ -675,7 +652,6 @@ class _BreakIndicator extends StatelessWidget {
       height: 24,
       alignment: Alignment.center,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 12,
@@ -699,7 +675,6 @@ class _BreakIndicator extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
     );
@@ -709,7 +684,6 @@ class _BreakIndicator extends StatelessWidget {
 class _LessonCard extends StatelessWidget {
   final LessonEntry lesson;
   const _LessonCard({required this.lesson});
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -718,7 +692,6 @@ class _LessonCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // هذا الكود سليم كما هو، يقوم بالانتقال لصفحة الملفات
           final documents = lesson.documentUrls.map((url) {
             return DocumentModel(
               id: url.hashCode.toString(),
@@ -726,15 +699,14 @@ class _LessonCard extends StatelessWidget {
               subject: lesson.subject,
               createdAt: DateTime.now(),
               thumbnailUrl:
-                  'https://cdn-icons-png.flaticon.com/512/337/337946.png', // صورة افتراضية للملف
+                  'https://cdn-icons-png.flaticon.com/512/337/337946.png',
               documentUrl: url,
             );
           }).toList();
-
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Documents(documentUrls: documents),
+              builder: (_) => Documents(documentUrls: documents),
             ),
           );
         },
@@ -742,10 +714,7 @@ class _LessonCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // ✅ (إضافة) ضمان محاذاة العناصر العلوية للعمودين
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- الجهة اليسرى (العنوان والأستاذ) ---
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -772,14 +741,9 @@ class _LessonCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-
-              // --- الجهة اليمنى (المدة والملفات) ---
-              // ✅ (تعديل) حولنا النص إلى عمود ليحمل المدة + صف الملفات
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min, // ليأخذ العمود أصغر حجم ممكن
                 children: [
-                  // 1. المدة (45 دقيقة)
                   Text(
                     lesson.duration,
                     style: const TextStyle(
@@ -787,28 +751,22 @@ class _LessonCard extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-
-                  // 2. (إضافة) صف الملفات - يظهر فقط لو فيه ملفات
                   if (lesson.documentUrls.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0), // مسافة علوية
+                      padding: const EdgeInsets.only(top: 8),
                       child: Row(
-                        spacing: 4,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '${lesson.documentUrls.length}', // عدد الملفات
+                            '${lesson.documentUrls.length}',
                             style: const TextStyle(
                               color: _TimetableScreenState.secondaryText,
                               fontSize: 18,
                               height: 1.0,
-
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           const Icon(
-                            IconlyLight.document, // أيقونة الملف
+                            IconlyLight.document,
                             color: _TimetableScreenState.secondaryText,
                             size: 16,
                           ),

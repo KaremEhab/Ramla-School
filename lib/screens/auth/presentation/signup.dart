@@ -6,7 +6,6 @@ import 'package:ramla_school/core/app/constants.dart';
 import 'package:ramla_school/core/services/cache_helper.dart';
 import 'package:ramla_school/core/utils.dart';
 import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
-import 'package:ramla_school/screens/auth/data/signup/signup_cubit.dart';
 import 'package:ramla_school/screens/layout.dart';
 
 class Signup extends StatefulWidget {
@@ -29,7 +28,12 @@ class _SignupState extends State<Signup> {
   bool _isPasswordObscured = true;
   bool _isConfirmPasswordObscured = true;
   UserRole? _selectedRole;
+
+  // For teachers (multiple grades)
   final List<Grade> _selectedGrades = [];
+  // For students (single grade)
+  Grade? _selectedGrade;
+
   List<SchoolSubject> _selectedSubjects = [];
   final List<UserRole> _roles = [
     UserRole.admin,
@@ -83,7 +87,6 @@ class _SignupState extends State<Signup> {
         }
 
         if (state is SignupSuccess) {
-          // ✅ Save user and role locally
           currentUser = state.user;
           currentRole = state.user.role;
 
@@ -165,41 +168,27 @@ class _SignupState extends State<Signup> {
                                 ),
                               ),
                               const SizedBox(height: 32),
-                              TextFormField(
+                              _buildTextField(
                                 controller: _firstNameController,
-                                decoration: _buildInputDecoration(
-                                  hint: 'اسمك',
-                                  icon: Icons.person_outline,
-                                ),
-                                validator: (value) =>
-                                    value == null || value.isEmpty
-                                    ? 'الرجاء إدخال اسمك بشكل صحيح'
-                                    : null,
+                                hint: 'اسمك',
+                                icon: Icons.person_outline,
+                                validatorMsg: 'الرجاء إدخال اسمك بشكل صحيح',
                               ),
                               const SizedBox(height: 20),
-                              TextFormField(
+                              _buildTextField(
                                 controller: _lastNameController,
-                                decoration: _buildInputDecoration(
-                                  hint: 'اسم العائلة',
-                                  icon: Icons.person_outline,
-                                ),
-                                validator: (value) =>
-                                    value == null || value.isEmpty
-                                    ? 'الرجاء إدخال اسم العائلة بشكل صحيح'
-                                    : null,
+                                hint: 'اسم العائلة',
+                                icon: Icons.person_outline,
+                                validatorMsg:
+                                    'الرجاء إدخال اسم العائلة بشكل صحيح',
                               ),
                               const SizedBox(height: 20),
-                              TextFormField(
+                              _buildTextField(
                                 controller: _emailController,
+                                hint: 'البريد الالكتروني',
+                                icon: Icons.email_outlined,
                                 keyboardType: TextInputType.emailAddress,
-                                decoration: _buildInputDecoration(
-                                  hint: 'البريد الالكتروني',
-                                  icon: Icons.email_outlined,
-                                ),
-                                validator: (value) =>
-                                    value == null || !value.contains('@')
-                                    ? 'الرجاء إدخال بريد إلكتروني صحيح'
-                                    : null,
+                                validatorMsg: 'الرجاء إدخال بريد إلكتروني صحيح',
                               ),
                               const SizedBox(height: 20),
 
@@ -224,184 +213,40 @@ class _SignupState extends State<Signup> {
                                   setState(() {
                                     _selectedRole = newValue;
                                     _selectedSubjects = [];
+                                    _selectedGrades.clear();
+                                    _selectedGrade = null;
                                   });
                                 },
                                 validator: (value) =>
                                     value == null ? 'الرجاء اختيار دورك' : null,
                               ),
+                              const SizedBox(height: 20),
+
+                              // Subjects Selector (teachers only)
+                              if (_selectedRole == UserRole.teacher)
+                                _buildSubjectsSelector(),
+
                               if (_selectedRole == UserRole.teacher)
                                 const SizedBox(height: 20),
 
-                              // Subjects Selector
+                              // Grades Selector
                               if (_selectedRole == UserRole.teacher)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FormField<List<SchoolSubject>>(
-                                      validator: (value) {
-                                        if (_selectedSubjects.isEmpty) {
-                                          return 'الرجاء اختيار مادة واحدة على الأقل';
-                                        }
-                                        return null;
-                                      },
-                                      builder: (formFieldState) {
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            InkWell(
-                                              onTap: _showSubjectsDialog,
-                                              child: InputDecorator(
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  fillColor: textFieldFill,
-                                                  prefixIcon: const Icon(
-                                                    Icons.school,
-                                                    color: iconGrey,
-                                                  ),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide.none,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  errorText: formFieldState
-                                                      .errorText, // show validator message
-                                                ),
-                                                child: Text(
-                                                  _selectedSubjects.isEmpty
-                                                      ? 'اختر المواد التي تُدرّسها'
-                                                      : _selectedSubjects
-                                                            .map((s) => s.name)
-                                                            .join('، '),
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                    if (_selectedSubjects.isNotEmpty)
-                                      const SizedBox(height: 10),
-
-                                    // Scrollable row for selected subjects
-                                    if (_selectedSubjects.isNotEmpty)
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          children: _selectedSubjects
-                                              .map(
-                                                (subject) => Container(
-                                                  margin:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 4,
-                                                      ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 6,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: primaryGreen
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        subject.name,
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          color: primaryText,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 6),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            _selectedSubjects
-                                                                .remove(
-                                                                  subject,
-                                                                );
-                                                          });
-                                                        },
-                                                        child: const Icon(
-                                                          Icons.close,
-                                                          size: 18,
-                                                          color: iconGrey,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-
-                              if (_selectedRole != null &&
-                                  _selectedRole != UserRole.admin)
-                                const SizedBox(height: 20),
-
-                              // Grade field
-                              if (_selectedRole != null &&
-                                  _selectedRole != UserRole.admin)
-                                GestureDetector(
-                                  onTap: () => _showGradeSelectionSheet(),
-                                  child: InputDecorator(
-                                    decoration: _buildInputDecoration(
-                                      hint: 'الصف الدراسي',
-                                      icon: Icons.numbers,
-                                    ),
-                                    child: Wrap(
-                                      spacing: 8,
-                                      runSpacing: 4,
-                                      children: _selectedGrades.isEmpty
-                                          ? [Text('اختر صفًا واحدًا على الأقل')]
-                                          : _selectedGrades
-                                                .map(
-                                                  (g) => Chip(
-                                                    label: Text(g.label),
-                                                    onDeleted: () {
-                                                      setState(() {
-                                                        _selectedGrades.remove(
-                                                          g,
-                                                        );
-                                                      });
-                                                    },
-                                                  ),
-                                                )
-                                                .toList(),
-                                    ),
-                                  ),
-                                ),
-
+                                _buildGradesSelector(), // multiple
                               if (_selectedRole == UserRole.student)
-                                const SizedBox(height: 20),
+                                _buildSingleGradeSelector(), // single
 
-                              // Class number (for student only)
+                              const SizedBox(height: 20),
+
+                              // Class number (students only)
                               if (_selectedRole == UserRole.student)
-                                TextFormField(
+                                _buildTextField(
                                   controller: _classNumberController,
+                                  hint: 'الفصل الدراسي',
+                                  icon: Icons.class_,
                                   keyboardType: TextInputType.number,
-                                  decoration: _buildInputDecoration(
-                                    hint: 'الفصل الدراسي',
-                                    icon: Icons.class_,
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'الرجاء اختيار الفصل الدراسي';
-                                    }
-                                    final classNum = int.tryParse(value);
+                                  validatorMsg: 'الرجاء اختيار الفصل الدراسي',
+                                  extraValidator: (value) {
+                                    final classNum = int.tryParse(value ?? '');
                                     if (classNum == null ||
                                         classNum < 1 ||
                                         classNum > 9) {
@@ -410,38 +255,43 @@ class _SignupState extends State<Signup> {
                                     return null;
                                   },
                                 ),
+
                               const SizedBox(height: 20),
 
                               // Password
-                              TextFormField(
+                              _buildTextField(
                                 controller: _passwordController,
+                                hint: 'كلمة السر',
+                                icon: Icons.lock_outline,
+                                isPassword: true,
                                 obscureText: _isPasswordObscured,
-                                decoration: _buildInputDecoration(
-                                  hint: 'كلمة السر',
-                                  icon: Icons.lock_outline,
-                                  isPassword: true,
-                                ),
-                                validator: (value) =>
-                                    value == null || value.length < 6
-                                    ? 'كلمة السر يجب أن تكون 6 أحرف على الأقل'
-                                    : null,
+                                toggleObscure: () {
+                                  setState(
+                                    () => _isPasswordObscured =
+                                        !_isPasswordObscured,
+                                  );
+                                },
+                                validatorMsg:
+                                    'كلمة السر يجب أن تكون 6 أحرف على الأقل',
                               ),
                               const SizedBox(height: 20),
 
-                              // Confirm password
-                              TextFormField(
+                              // Confirm Password
+                              _buildTextField(
                                 controller: _confirmPasswordController,
+                                hint: 'تأكيد كلمة السر',
+                                icon: Icons.lock_outline,
+                                isPassword: true,
+                                isConfirm: true,
                                 obscureText: _isConfirmPasswordObscured,
-                                decoration: _buildInputDecoration(
-                                  hint: 'تأكيد كلمة السر',
-                                  icon: Icons.lock_outline,
-                                  isPassword: true,
-                                  isConfirm: true,
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'الرجاء تأكيد كلمة السر';
-                                  }
+                                toggleObscure: () {
+                                  setState(
+                                    () => _isConfirmPasswordObscured =
+                                        !_isConfirmPasswordObscured,
+                                  );
+                                },
+                                validatorMsg: 'الرجاء تأكيد كلمة السر',
+                                extraValidator: (value) {
                                   if (value != _passwordController.text) {
                                     return 'كلمتا السر غير متطابقتين';
                                   }
@@ -471,7 +321,7 @@ class _SignupState extends State<Signup> {
                                     state is SignupLoading
                                         ? 'يتم الآن انشاء حسابك'
                                         : 'إنشاء حساب جديد',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -526,6 +376,39 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    String? validatorMsg,
+    bool isPassword = false,
+    bool isConfirm = false,
+    bool isDropdown = false,
+    bool obscureText = false,
+    VoidCallback? toggleObscure,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? extraValidator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      decoration: _buildInputDecoration(
+        hint: hint,
+        icon: icon,
+        isPassword: isPassword,
+        isConfirm: isConfirm,
+        isDropdown: isDropdown,
+      ),
+      validator: (value) {
+        if (validatorMsg != null && (value == null || value.isEmpty))
+          return validatorMsg;
+        if (extraValidator != null) return extraValidator(value);
+        return null;
+      },
+    );
+  }
+
   InputDecoration _buildInputDecoration({
     String? hint,
     required IconData icon,
@@ -569,6 +452,162 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  Widget _buildSubjectsSelector() {
+    return FormField<List<SchoolSubject>>(
+      validator: (value) {
+        if (_selectedSubjects.isEmpty)
+          return 'الرجاء اختيار مادة واحدة على الأقل';
+        return null;
+      },
+      builder: (formFieldState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: _showSubjectsDialog,
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: textFieldFill,
+                  prefixIcon: const Icon(Icons.school, color: iconGrey),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  errorText: formFieldState.errorText,
+                ),
+                child: Text(
+                  _selectedSubjects.isEmpty
+                      ? 'اختر المواد التي تُدرّسها'
+                      : _selectedSubjects.map((s) => s.name).join('، '),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            ),
+            if (_selectedSubjects.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _selectedSubjects
+                      .map(
+                        (subject) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: primaryGreen.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                subject.name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: primaryText,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(
+                                    () => _selectedSubjects.remove(subject),
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: iconGrey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGradesSelector() {
+    // Multiple grades for teachers
+    return GestureDetector(
+      onTap: _showGradeSelectionSheet,
+      child: InputDecorator(
+        decoration: _buildInputDecoration(
+          hint: 'اختر الصفوف',
+          icon: Icons.numbers,
+        ),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: _selectedGrades.isEmpty
+              ? [const Text('اختر صفًا واحدًا على الأقل')]
+              : _selectedGrades
+                    .map(
+                      (g) => Chip(
+                        label: Text(g.label),
+                        onDeleted: () =>
+                            setState(() => _selectedGrades.remove(g)),
+                      ),
+                    )
+                    .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSingleGradeSelector() {
+    // Single grade for students
+    return DropdownButtonFormField<Grade>(
+      value: _selectedGrade,
+      decoration: _buildInputDecoration(
+        hint: 'الصف الدراسي',
+        icon: Icons.numbers,
+        isDropdown: true,
+      ),
+      items: Grade.values.map((grade) {
+        return DropdownMenuItem(value: grade, child: Text(grade.label));
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedGrade = value;
+        });
+      },
+      validator: (value) => value == null ? 'الرجاء اختيار الصف الدراسي' : null,
+    );
+  }
+
+  Future<void> _signup() async {
+    if (!_formKey.currentState!.validate() || _selectedRole == null) return;
+
+    final cubit = context.read<SignupCubit>();
+
+    cubit.signup(
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      role: _selectedRole!,
+      subjects: _selectedRole == UserRole.teacher ? _selectedSubjects : null,
+      grades: _selectedRole == UserRole.teacher
+          ? _selectedGrades.map((g) => int.parse(g.label)).toList()
+          : null,
+      grade: _selectedRole == UserRole.student
+          ? int.parse(_selectedGrade!.label)
+          : null,
+      classNumber: _selectedRole == UserRole.student
+          ? int.tryParse(_classNumberController.text)
+          : null,
+    );
+  }
+
   void _showSubjectsDialog() {
     final tempSelected = List<SchoolSubject>.from(_selectedSubjects);
     final allSubjects = SchoolSubject.values;
@@ -592,8 +631,6 @@ class _SignupState extends State<Signup> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-
-                  // Scrollable list of subjects
                   Flexible(
                     child: SingleChildScrollView(
                       child: Column(
@@ -607,18 +644,8 @@ class _SignupState extends State<Signup> {
                             onChanged: (selected) {
                               setStateDialog(() {
                                 if (selected == true) {
-                                  if (tempSelected.length < 2) {
+                                  if (tempSelected.length < 2)
                                     tempSelected.add(subject);
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'يمكنك اختيار مادتين فقط، احذف واحدة أولاً',
-                                        ),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  }
                                 } else {
                                   tempSelected.remove(subject);
                                 }
@@ -629,7 +656,6 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -649,9 +675,7 @@ class _SignupState extends State<Signup> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              _selectedSubjects = tempSelected;
-                            });
+                            setState(() => _selectedSubjects = tempSelected);
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
@@ -673,35 +697,6 @@ class _SignupState extends State<Signup> {
           },
         );
       },
-    );
-  }
-
-  Future<void> _signup() async {
-    if (!_formKey.currentState!.validate() || _selectedRole == null) return;
-
-    if (_selectedGrades.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الرجاء اختيار صف واحد على الأقل')),
-      );
-      return;
-    }
-
-    final cubit = context.read<SignupCubit>();
-
-    cubit.signup(
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-      role: _selectedRole!,
-      subjects: _selectedRole == UserRole.teacher ? _selectedSubjects : null,
-      grade: _selectedRole == UserRole.student
-          ? int.tryParse(_gradeController.text)
-          : null,
-      grades: _selectedGrades.map((g) => g.index).toList(),
-      classNumber: _selectedRole == UserRole.student
-          ? int.tryParse(_classNumberController.text)
-          : null,
     );
   }
 
@@ -732,20 +727,13 @@ class _SignupState extends State<Signup> {
                       onChanged: (checked) {
                         setModalState(() {
                           if (checked == true) {
-                            if (_selectedGrades.length < 2) {
+                            if (_selectedGrades.length < 2)
                               _selectedGrades.add(grade);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('يمكنك اختيار صفين فقط'),
-                                ),
-                              );
-                            }
                           } else {
                             _selectedGrades.remove(grade);
                           }
                         });
-                        setState(() {}); // update parent UI
+                        setState(() {});
                       },
                     );
                   }).toList(),

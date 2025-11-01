@@ -33,7 +33,7 @@ class TimetableModel {
     return TimetableModel(
       id: data['id'] ?? '',
       grade: Grade.values.firstWhere(
-        (g) => g.label == data['grade'],
+        (g) => g.index + 6 == (data['grade'] is int ? data['grade'] : 6),
         orElse: () => Grade.grade6,
       ),
       classNumber: data['classNumber'] ?? 1,
@@ -49,10 +49,27 @@ class TimetableModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'grade': grade.label,
+      'grade': grade.index + 6, // store as int (6,7,8,...)
       'classNumber': classNumber,
       'date': Timestamp.fromDate(date),
       'lessons': lessons.map((l) => l.toMap()).toList(),
     };
+  }
+
+  // ✅ Add this method
+  TimetableModel copyWith({
+    String? id,
+    Grade? grade,
+    int? classNumber,
+    DateTime? date,
+    List<LessonModel>? lessons,
+  }) {
+    return TimetableModel(
+      id: id ?? this.id,
+      grade: grade ?? this.grade,
+      classNumber: classNumber ?? this.classNumber,
+      date: date ?? this.date,
+      lessons: lessons ?? this.lessons,
+    );
   }
 }

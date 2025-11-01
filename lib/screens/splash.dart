@@ -16,16 +16,29 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final _firestore = FirebaseFirestore.instance;
+  bool? _isLoggedIn; // هنا نخزن النتيجة
+
+  @override
+  void initState() {
+    super.initState();
+    _initSplash();
+  }
+
+  void _initSplash() async {
+    final result = await _checkUserStatus();
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = result;
+      });
+    }
+  }
 
   Future<bool> _checkUserStatus() async {
-    // Simulate splash delay
     await Future.delayed(const Duration(seconds: 3));
 
-    // Check if user exists locally
     if (currentUser == null || currentRole == null) return false;
 
     try {
-      // Fetch latest user data from Firestore
       final userDoc = await _firestore
           .collection('users')
           .doc(currentUser!.id)
@@ -33,13 +46,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (userDoc.exists) {
         final newData = userDoc.data()!;
-
-        // Compare if anything changed
         if (newData.toString() != currentUser!.toMap().toString()) {
-          // Update local cached user model
           currentUser = currentUser!.copyWithJson(newData);
-
-          // Save new model in cache (SharedPreferences, Hive, etc.)
           await CacheHelper.cacheUserData(currentUser!, currentRole!.name);
         }
       }
@@ -57,57 +65,52 @@ class _SplashScreenState extends State<SplashScreen> {
     const Color primaryColor = Color(0xFF005A4D);
     const Color accentColor = Color(0xFFF39C12);
 
-    return FutureBuilder<bool>(
-      future: _checkUserStatus(),
-      builder: (context, snapshot) {
-        // While waiting, show splash animation
-        if (snapshot.connectionState != ConnectionState.done) {
-          return Scaffold(
-            body: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorTop, colorBottom],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/images/ramla-logo.png', width: 230),
-                    const SizedBox(height: 44),
-                    const SizedBox(
-                      width: 270,
-                      child: Text(
-                        'مدرسة رملة أم المؤمنين ترحب بكم!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: LoadingAnimationWidget.progressiveDots(
-                        color: accentColor,
-                        size: 60,
-                      ),
-                    ),
-                    const SizedBox(height: 60),
-                  ],
-                ),
-              ),
+    // لو النتيجة لسه null، نعرض Splash
+    if (_isLoggedIn == null) {
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colorTop, colorBottom],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-          );
-        }
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/ramla-logo.png', width: 230),
+                const SizedBox(height: 44),
+                const SizedBox(
+                  width: 270,
+                  child: Text(
+                    'مدرسة رملة أم المؤمنين ترحب بكم!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: LoadingAnimationWidget.progressiveDots(
+                    color: accentColor,
+                    size: 60,
+                  ),
+                ),
+                const SizedBox(height: 60),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
-        final bool isLoggedIn = snapshot.data ?? false;
-        return isLoggedIn ? const LayoutScreen() : const Login();
-      },
-    );
+    // بعد ما النتيجة جاهزة نروح للشاشة المناسبة
+    return _isLoggedIn! ? const LayoutScreen() : const Login();
   }
 }
